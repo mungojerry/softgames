@@ -3,15 +3,10 @@ import { SceneManager } from "../scenes/SceneManager";
 import { UIConfig } from "../styles/UIConfig";
 import { Button } from "./Button";
 import { Label } from "./Label";
+import { Scene } from "../scenes/Scene";
 
 export class SceneUI {
-  private scene: any;
-  private sceneManager: SceneManager;
-
-  constructor(scene: any, sceneManager: SceneManager) {
-    this.scene = scene;
-    this.sceneManager = sceneManager;
-  }
+  constructor(private scene: Scene, private sceneManager: SceneManager) {}
 
   addBackground(color: number) {
     const bg = new Graphics();
