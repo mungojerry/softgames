@@ -87,4 +87,8 @@ export class SceneManager {
   getAppHeight(): number {
     return this.app.screen.height;
   }
+
+  getApp(): Application {
+    return this.app;
+  }
 }

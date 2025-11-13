@@ -4,10 +4,12 @@ import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
 import { Colors } from "../styles/Colors";
 import { SceneUI } from "../ui/SceneUI";
+import { AcesOfShadowsGame } from "../games/AcesOfShadowsGame";
 import gsap from "gsap";
 
 export class AceOfShadowsScene extends Scene {
   private shadowParticles: Graphics[] = [];
+  private game: AcesOfShadowsGame | null = null;
 
   constructor(private sceneManager: SceneManager) {
     super();
@@ -21,16 +23,30 @@ export class AceOfShadowsScene extends Scene {
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
     this.createShadowParticles();
+    this.startGame();
   }
 
   onExit(): void {
     this.shadowParticles.forEach((particle) => gsap.killTweensOf(particle));
     this.shadowParticles = [];
+
+    if (this.game) {
+      this.game.destroy();
+      this.game = null;
+    }
+
     this.removeChildren();
   }
 
   update(delta: number): void {
     // GSAP handles animation, no manual update needed
+  }
+
+  private startGame(): void {
+    this.game = new AcesOfShadowsGame(this.sceneManager.getApp());
+    const centerX = this.sceneManager.getAppWidth() / 2;
+    const centerY = this.sceneManager.getAppHeight() / 2;
+    this.game.createCards(this, centerX, centerY);
   }
 
   private createShadowParticles(): void {
