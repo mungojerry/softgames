@@ -14,10 +14,23 @@ export class AcesOfShadowsGame {
   private currentDestStackIndex = 1; // Start with stack 1 (skip main stack at index 0)
 
   constructor(app: Application) {
-    // Load card texture from assets (works with any base path in dev and production)
-    this.cardTexture = Texture.from(
-      import.meta.env.BASE_URL + "assets/card.png"
-    );
+    if (!app) {
+      throw new Error("Application instance is required");
+    }
+
+    try {
+      // Load card texture from assets (works with any base path in dev and production)
+      const basePath = import.meta?.env?.BASE_URL || "/";
+      this.cardTexture = Texture.from(basePath + "assets/card.png");
+
+      if (!this.cardTexture) {
+        throw new Error("Failed to load card texture");
+      }
+    } catch (error) {
+      console.error("Error loading card texture:", error);
+      // Create a fallback white texture
+      this.cardTexture = Texture.WHITE;
+    }
   }
 
   public createCards(
