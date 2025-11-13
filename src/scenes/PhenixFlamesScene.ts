@@ -7,12 +7,10 @@ import { UIConfig } from "../styles/UIConfig";
 import { UIHelpers } from "../utils/UIHelpers";
 
 export class PhenixFlamesScene extends Scene {
-  private sceneManager: SceneManager;
   private flames: Graphics[] = [];
 
-  constructor(sceneManager: SceneManager) {
+  constructor(private sceneManager: SceneManager) {
     super();
-    this.sceneManager = sceneManager;
   }
 
   onEnter(): void {
@@ -28,7 +26,6 @@ export class PhenixFlamesScene extends Scene {
   }
 
   update(delta: number): void {
-    // Animate flames
     this.flames.forEach((flame) => {
       flame.y -= 3 * delta;
       flame.alpha -= 0.02 * delta;

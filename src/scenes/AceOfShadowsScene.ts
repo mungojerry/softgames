@@ -7,12 +7,10 @@ import { UIConfig } from "../styles/UIConfig";
 import { UIHelpers } from "../utils/UIHelpers";
 
 export class AceOfShadowsScene extends Scene {
-  private sceneManager: SceneManager;
   private shadowParticles: Graphics[] = [];
 
-  constructor(sceneManager: SceneManager) {
+  constructor(private sceneManager: SceneManager) {
     super();
-    this.sceneManager = sceneManager;
   }
 
   onEnter(): void {

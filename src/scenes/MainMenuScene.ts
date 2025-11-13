@@ -9,13 +9,11 @@ import { UIConfig } from "../styles/UIConfig";
 import { UIHelpers } from "../utils/UIHelpers";
 
 export class MainMenuScene extends Scene {
-  private sceneManager: SceneManager;
   private particles: Graphics[] = [];
   private time: number = 0;
 
-  constructor(sceneManager: SceneManager) {
+  constructor(private sceneManager: SceneManager) {
     super();
-    this.sceneManager = sceneManager;
   }
 
   onEnter(): void {

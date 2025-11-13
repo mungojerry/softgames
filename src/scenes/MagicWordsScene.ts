@@ -8,13 +8,11 @@ import { UIConfig } from "../styles/UIConfig";
 import { UIHelpers } from "../utils/UIHelpers";
 
 export class MagicWordsScene extends Scene {
-  private sceneManager: SceneManager;
   private floatingWords: Text[] = [];
   private time: number = 0;
 
-  constructor(sceneManager: SceneManager) {
+  constructor(private sceneManager: SceneManager) {
     super();
-    this.sceneManager = sceneManager;
   }
 
   onEnter(): void {
