@@ -1,7 +1,10 @@
-import { Graphics, Text, TextStyle } from "pixi.js";
+import { Graphics, Text } from "pixi.js";
 import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
+import { TextStyles } from "../styles/TextStyles";
+import { Colors } from "../styles/Colors";
+import { UIConfig } from "../styles/UIConfig";
 
 export class PhenixFlamesScene extends Scene {
   private sceneManager: SceneManager;
@@ -53,21 +56,7 @@ export class PhenixFlamesScene extends Scene {
   }
 
   private createTitle(): void {
-    const titleStyle = new TextStyle({
-      fontFamily: "Arial",
-      fontSize: 72,
-      fontWeight: "bold",
-      fill: ["#ff4500", "#ffa500", "#ff0000"],
-      stroke: "#8b0000",
-      strokeThickness: 4,
-      dropShadow: true,
-      dropShadowColor: "#ff4500",
-      dropShadowBlur: 15,
-      dropShadowAngle: Math.PI / 6,
-      dropShadowDistance: 8,
-    });
-
-    const title = new Text("PHENIX FLAMES", titleStyle);
+    const title = new Text("PHENIX FLAMES", TextStyles.SCENE_TITLE_FLAMES);
     title.anchor.set(0.5);
     title.x = this.sceneManager.getAppWidth() / 2;
     title.y = 100;
@@ -77,28 +66,23 @@ export class PhenixFlamesScene extends Scene {
 
   private createBackButton(): void {
     const button = new Graphics();
-    const width = 200;
-    const height = 60;
+    const width = UIConfig.BUTTON_SMALL.WIDTH;
+    const height = UIConfig.BUTTON_SMALL.HEIGHT;
 
-    button.beginFill(0xff4500);
-    button.lineStyle(2, 0xffffff);
+    button.beginFill(Colors.BTN_FLAMES);
+    button.lineStyle(UIConfig.BUTTON_SMALL.BORDER, Colors.WHITE);
     button.drawRect(0, 0, width, height);
     button.endFill();
 
-    const textStyle = new TextStyle({
-      fontFamily: "Arial",
-      fontSize: 24,
-      fill: 0xffffff,
-    });
-
-    const buttonText = new Text("Back to Menu", textStyle);
+    const buttonText = new Text("Back to Menu", TextStyles.BUTTON_SMALL);
     buttonText.anchor.set(0.5);
     buttonText.x = width / 2;
     buttonText.y = height / 2;
     button.addChild(buttonText);
 
-    button.x = 50;
-    button.y = this.sceneManager.getAppHeight() - 80;
+    button.x = UIConfig.POSITION.BACK_BUTTON_X;
+    button.y =
+      this.sceneManager.getAppHeight() - UIConfig.POSITION.BACK_BUTTON_OFFSET_Y;
     button.eventMode = "static";
     button.cursor = "pointer";
 
@@ -114,7 +98,7 @@ export class PhenixFlamesScene extends Scene {
       const flame = new Graphics();
       const size = Math.random() * 15 + 10;
 
-      flame.beginFill(i % 2 === 0 ? 0xff4500 : 0xffa500);
+      flame.beginFill(i % 2 === 0 ? Colors.FLAME_ORANGE : Colors.FLAME_YELLOW);
       flame.moveTo(0, size);
       flame.bezierCurveTo(-size / 2, size / 2, -size / 2, -size / 2, 0, -size);
       flame.bezierCurveTo(size / 2, -size / 2, size / 2, size / 2, 0, size);

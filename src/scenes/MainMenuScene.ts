@@ -1,9 +1,12 @@
-import { Graphics, Text, TextStyle } from "pixi.js";
+import { Graphics, Text } from "pixi.js";
 import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 import { AceOfShadowsScene } from "./AceOfShadowsScene";
 import { MagicWordsScene } from "./MagicWordsScene";
 import { PhenixFlamesScene } from "./PhenixFlamesScene";
+import { TextStyles } from "../styles/TextStyles";
+import { Colors } from "../styles/Colors";
+import { UIConfig } from "../styles/UIConfig";
 
 export class MainMenuScene extends Scene {
   private sceneManager: SceneManager;
@@ -27,32 +30,32 @@ export class MainMenuScene extends Scene {
   }
 
   private createTitle(): void {
-    const titleStyle = new TextStyle({
-      fontFamily: "Arial",
-      fontSize: 64,
-      fontWeight: "bold",
-      fill: 0xffffff,
-      align: "center",
-    });
-
-    const title = new Text("MAIN MENU", titleStyle);
+    const title = new Text("MAIN MENU", TextStyles.TITLE);
     title.anchor.set(0.5);
     title.x = this.sceneManager.getAppWidth() / 2;
-    title.y = 150;
+    title.y = UIConfig.POSITION.TITLE_Y;
 
     this.addChild(title);
   }
 
   private createMenuButtons(): void {
     const games = [
-      { name: "Ace of Shadows", scene: AceOfShadowsScene, color: 0x8b0000 },
-      { name: "Magic Words", scene: MagicWordsScene, color: 0x4b0082 },
-      { name: "Phenix Flames", scene: PhenixFlamesScene, color: 0xff4500 },
+      {
+        name: "Ace of Shadows",
+        scene: AceOfShadowsScene,
+        color: Colors.BTN_SHADOWS,
+      },
+      { name: "Magic Words", scene: MagicWordsScene, color: Colors.BTN_MAGIC },
+      {
+        name: "Phenix Flames",
+        scene: PhenixFlamesScene,
+        color: Colors.BTN_FLAMES,
+      },
     ];
 
     const centerX = this.sceneManager.getAppWidth() / 2;
-    const startY = 300;
-    const spacing = 120;
+    const startY = UIConfig.POSITION.MENU_START_Y;
+    const spacing = UIConfig.SPACING.BUTTON;
 
     games.forEach((game, index) => {
       const button = this.createButton(game.name, game.color);
@@ -67,21 +70,14 @@ export class MainMenuScene extends Scene {
 
   private createButton(text: string, color: number): Graphics {
     const button = new Graphics();
-    const width = 400;
-    const height = 80;
+    const width = UIConfig.BUTTON.WIDTH;
+    const height = UIConfig.BUTTON.HEIGHT;
 
     // Draw button
-    this.drawButton(button, width, height, color, 0xffffff);
+    this.drawButton(button, width, height, color, Colors.WHITE);
 
     // Button text
-    const textStyle = new TextStyle({
-      fontFamily: "Arial",
-      fontSize: 32,
-      fontWeight: "bold",
-      fill: 0xffffff,
-    });
-
-    const buttonText = new Text(text, textStyle);
+    const buttonText = new Text(text, TextStyles.BUTTON);
     buttonText.anchor.set(0.5);
     button.addChild(buttonText);
 
@@ -96,14 +92,14 @@ export class MainMenuScene extends Scene {
         button,
         width,
         height,
-        this.lightenColor(color),
-        0xffff00
+        Colors.lighten(color),
+        Colors.YELLOW
       );
     });
 
     button.on("pointerout", () => {
       button.clear();
-      this.drawButton(button, width, height, color, 0xffffff);
+      this.drawButton(button, width, height, color, Colors.WHITE);
     });
 
     return button;
@@ -117,15 +113,8 @@ export class MainMenuScene extends Scene {
     strokeColor: number
   ): void {
     graphics.beginFill(fillColor);
-    graphics.lineStyle(3, strokeColor);
+    graphics.lineStyle(UIConfig.BUTTON.BORDER, strokeColor);
     graphics.drawRect(-width / 2, -height / 2, width, height);
     graphics.endFill();
-  }
-
-  private lightenColor(color: number): number {
-    const r = Math.min(255, ((color >> 16) & 0xff) + 50);
-    const g = Math.min(255, ((color >> 8) & 0xff) + 50);
-    const b = Math.min(255, (color & 0xff) + 50);
-    return (r << 16) | (g << 8) | b;
   }
 }

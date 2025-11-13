@@ -1,6 +1,7 @@
 import { Application } from "pixi.js";
 import { SceneManager } from "./scenes/SceneManager";
 import { MainMenuScene } from "./scenes/MainMenuScene";
+import { Colors } from "./styles/Colors";
 
 class Game {
   private app: Application;
@@ -10,7 +11,7 @@ class Game {
     this.app = new Application({
       width: 1280,
       height: 720,
-      backgroundColor: 0x1a1a1a,
+      backgroundColor: Colors.BG_DARK,
       resolution: window.devicePixelRatio || 1,
       autoDensity: true,
     });
