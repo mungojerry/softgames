@@ -10,6 +10,8 @@ import { Label } from "../ui/Label";
 import { Button } from "../ui/Button";
 import gsap from "gsap";
 
+import versionData from "../../version.json";
+
 export class MainMenuScene extends Scene {
   private particles: Graphics[] = [];
 
@@ -21,6 +23,25 @@ export class MainMenuScene extends Scene {
     this.createParchmentBackground();
     this.createTitle();
     this.createMenuButtons();
+    this.createVersionLabel();
+  }
+
+  private createVersionLabel(): void {
+    const version = versionData.version || "0.0.0";
+    const label = new Label(`v${version}`, "buttonSmall", {
+      x: this.sceneManager.getAppWidth() - 30,
+      y: this.sceneManager.getAppHeight() - 20,
+      anchor: { x: 1, y: 1 },
+      style: {
+        fontFamily: "Arial, sans-serif",
+        fontSize: 24,
+        fontWeight: "bold",
+        fill: 0x4a3a22,
+        align: "right",
+        dropShadow: false,
+      },
+    });
+    this.addChild(label);
   }
 
   onExit(): void {
