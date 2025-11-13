@@ -1,10 +1,10 @@
-import { Graphics, Text } from "pixi.js";
+import { Graphics } from "pixi.js";
 import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
-import { TextStyles } from "../styles/TextStyles";
 import { Colors } from "../styles/Colors";
 import { UIConfig } from "../styles/UIConfig";
+import { UIHelpers } from "../utils/UIHelpers";
 
 export class PhenixFlamesScene extends Scene {
   private sceneManager: SceneManager;
@@ -43,53 +43,31 @@ export class PhenixFlamesScene extends Scene {
   }
 
   private createBackground(): void {
-    const bg = new Graphics();
-    bg.beginFill(0x1a0000);
-    bg.drawRect(
-      0,
-      0,
+    const bg = UIHelpers.createBackground(
       this.sceneManager.getAppWidth(),
-      this.sceneManager.getAppHeight()
+      this.sceneManager.getAppHeight(),
+      Colors.BG_FLAMES
     );
-    bg.endFill();
     this.addChild(bg);
   }
 
   private createTitle(): void {
-    const title = new Text("PHENIX FLAMES", TextStyles.SCENE_TITLE_FLAMES);
-    title.anchor.set(0.5);
-    title.x = this.sceneManager.getAppWidth() / 2;
-    title.y = 100;
-
+    const title = UIHelpers.createTitle(
+      "PHENIX FLAMES",
+      this.sceneManager.getAppWidth() / 2,
+      100
+    );
     this.addChild(title);
   }
 
   private createBackButton(): void {
-    const button = new Graphics();
-    const width = UIConfig.BUTTON_SMALL.WIDTH;
-    const height = UIConfig.BUTTON_SMALL.HEIGHT;
-
-    button.beginFill(Colors.BTN_FLAMES);
-    button.lineStyle(UIConfig.BUTTON_SMALL.BORDER, Colors.WHITE);
-    button.drawRect(0, 0, width, height);
-    button.endFill();
-
-    const buttonText = new Text("Back to Menu", TextStyles.BUTTON_SMALL);
-    buttonText.anchor.set(0.5);
-    buttonText.x = width / 2;
-    buttonText.y = height / 2;
-    button.addChild(buttonText);
-
+    const button = UIHelpers.createBackButton(
+      () => this.sceneManager.changeScene(new MainMenuScene(this.sceneManager)),
+      Colors.BTN_FLAMES
+    );
     button.x = UIConfig.POSITION.BACK_BUTTON_X;
     button.y =
       this.sceneManager.getAppHeight() - UIConfig.POSITION.BACK_BUTTON_OFFSET_Y;
-    button.eventMode = "static";
-    button.cursor = "pointer";
-
-    button.on("pointerdown", () => {
-      this.sceneManager.changeScene(new MainMenuScene(this.sceneManager));
-    });
-
     this.addChild(button);
   }
 

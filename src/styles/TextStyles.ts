@@ -2,10 +2,18 @@ import { TextStyle } from "pixi.js";
 
 export class TextStyles {
   static readonly TITLE = new TextStyle({
-    fontFamily: "Arial",
-    fontSize: 64,
+    fontFamily: "Arial, sans-serif",
+    fontSize: 80,
     fontWeight: "bold",
-    fill: 0xffffff,
+    fill: "#ffffff",
+    stroke: "#333333",
+    strokeThickness: 3,
+    dropShadow: true,
+    dropShadowColor: "#000000",
+    dropShadowBlur: 10,
+    dropShadowAngle: Math.PI / 4,
+    dropShadowDistance: 6,
+    letterSpacing: 6,
     align: "center",
   });
 
@@ -52,10 +60,11 @@ export class TextStyles {
   });
 
   static readonly BUTTON = new TextStyle({
-    fontFamily: "Arial",
+    fontFamily: "Arial, sans-serif",
     fontSize: 32,
     fontWeight: "bold",
-    fill: 0xffffff,
+    fill: "#ffffff",
+    letterSpacing: 1,
   });
 
   static readonly BUTTON_SMALL = new TextStyle({

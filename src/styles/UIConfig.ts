@@ -1,8 +1,9 @@
 export class UIConfig {
   static readonly BUTTON = {
-    WIDTH: 400,
-    HEIGHT: 80,
-    BORDER: 3,
+    WIDTH: 450,
+    HEIGHT: 90,
+    BORDER: 4,
+    CORNER_RADIUS: 12,
   };
 
   static readonly BUTTON_SMALL = {
@@ -18,7 +19,7 @@ export class UIConfig {
   static readonly POSITION = {
     TITLE_Y: 150,
     MENU_START_Y: 300,
-    BACK_BUTTON_X: 50,
-    BACK_BUTTON_OFFSET_Y: 80,
+    BACK_BUTTON_X: 130,
+    BACK_BUTTON_OFFSET_Y: 50,
   };
 }

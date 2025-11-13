@@ -4,12 +4,14 @@ import { SceneManager } from "./SceneManager";
 import { AceOfShadowsScene } from "./AceOfShadowsScene";
 import { MagicWordsScene } from "./MagicWordsScene";
 import { PhenixFlamesScene } from "./PhenixFlamesScene";
-import { TextStyles } from "../styles/TextStyles";
 import { Colors } from "../styles/Colors";
 import { UIConfig } from "../styles/UIConfig";
+import { UIHelpers } from "../utils/UIHelpers";
 
 export class MainMenuScene extends Scene {
   private sceneManager: SceneManager;
+  private particles: Graphics[] = [];
+  private time: number = 0;
 
   constructor(sceneManager: SceneManager) {
     super();
@@ -17,24 +19,47 @@ export class MainMenuScene extends Scene {
   }
 
   onEnter(): void {
+    this.createBackgroundParticles();
     this.createTitle();
     this.createMenuButtons();
   }
 
   onExit(): void {
+    this.particles = [];
     this.removeChildren();
   }
 
   update(delta: number): void {
-    // Animation logic here if needed
+    this.time += delta * 0.01;
+
+    // Animate background particles
+    this.particles.forEach((particle, index) => {
+      particle.alpha = 0.15 + Math.sin(this.time + index) * 0.1;
+    });
+  }
+  private createBackgroundParticles(): void {
+    for (let i = 0; i < 15; i++) {
+      const particle = new Graphics();
+      const size = Math.random() * 3 + 1;
+
+      particle.beginFill(0xffffff, 0.2);
+      particle.drawCircle(0, 0, size);
+      particle.endFill();
+
+      particle.x = Math.random() * this.sceneManager.getAppWidth();
+      particle.y = Math.random() * this.sceneManager.getAppHeight();
+      particle.alpha = Math.random() * 0.3;
+
+      this.particles.push(particle);
+      this.addChild(particle);
+    }
   }
 
   private createTitle(): void {
-    const title = new Text("MAIN MENU", TextStyles.TITLE);
-    title.anchor.set(0.5);
-    title.x = this.sceneManager.getAppWidth() / 2;
-    title.y = UIConfig.POSITION.TITLE_Y;
-
+    const title = UIHelpers.createTitle(
+      "MAIN MENU",
+      this.sceneManager.getAppWidth() / 2
+    );
     this.addChild(title);
   }
 
@@ -58,63 +83,14 @@ export class MainMenuScene extends Scene {
     const spacing = UIConfig.SPACING.BUTTON;
 
     games.forEach((game, index) => {
-      const button = this.createButton(game.name, game.color);
+      const button = UIHelpers.createButton(game.name, game.color, {
+        onClick: () => {
+          this.sceneManager.changeScene(new game.scene(this.sceneManager));
+        },
+      });
       button.x = centerX;
       button.y = startY + index * spacing;
-      button.on("pointerdown", () => {
-        this.sceneManager.changeScene(new game.scene(this.sceneManager));
-      });
       this.addChild(button);
     });
-  }
-
-  private createButton(text: string, color: number): Graphics {
-    const button = new Graphics();
-    const width = UIConfig.BUTTON.WIDTH;
-    const height = UIConfig.BUTTON.HEIGHT;
-
-    // Draw button
-    this.drawButton(button, width, height, color, Colors.WHITE);
-
-    // Button text
-    const buttonText = new Text(text, TextStyles.BUTTON);
-    buttonText.anchor.set(0.5);
-    button.addChild(buttonText);
-
-    // Make interactive
-    button.eventMode = "static";
-    button.cursor = "pointer";
-
-    // Hover effects
-    button.on("pointerover", () => {
-      button.clear();
-      this.drawButton(
-        button,
-        width,
-        height,
-        Colors.lighten(color),
-        Colors.YELLOW
-      );
-    });
-
-    button.on("pointerout", () => {
-      button.clear();
-      this.drawButton(button, width, height, color, Colors.WHITE);
-    });
-
-    return button;
-  }
-
-  private drawButton(
-    graphics: Graphics,
-    width: number,
-    height: number,
-    fillColor: number,
-    strokeColor: number
-  ): void {
-    graphics.beginFill(fillColor);
-    graphics.lineStyle(UIConfig.BUTTON.BORDER, strokeColor);
-    graphics.drawRect(-width / 2, -height / 2, width, height);
-    graphics.endFill();
   }
 }

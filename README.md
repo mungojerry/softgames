@@ -11,7 +11,7 @@ A Pixi.js TypeScript application with a menu system featuring three game scenes.
 
 ## Installation
 
-```bash
+```
 npm install
 ```
 
@@ -19,7 +19,7 @@ npm install
 
 Start the development server:
 
-```bash
+```
 npm run dev
 ```
 
@@ -29,7 +29,7 @@ The app will open at `http://localhost:3000`
 
 Build for production:
 
-```bash
+```
 npm run build
 ```
 
