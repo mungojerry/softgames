@@ -1,25 +1,17 @@
-import { Container, Graphics, Text, TextStyle } from "pixi.js";
+import { Container, Text, TextStyle } from "pixi.js";
 
 export class FPSCounter extends Container {
   private fpsText: Text;
   private frameCount: number = 0;
   private lastTime: number = performance.now();
   private fps: number = 0;
-  private background: Graphics;
+  private updateInterval: number = 500;
 
   constructor() {
     super();
 
-    // Create background
-    this.background = new Graphics();
-    this.background.beginFill(0x000000, 0.6);
-    this.background.drawRoundedRect(0, 0, 100, 40, 5);
-    this.background.endFill();
-    this.addChild(this.background);
-
-    // Create FPS text
     const textStyle = new TextStyle({
-      fontFamily: "Arial, sans-serif",
+      fontFamily: "Courier New, monospace",
       fontSize: 18,
       fontWeight: "bold",
       fill: "#00ff00",
@@ -30,7 +22,6 @@ export class FPSCounter extends Container {
     this.fpsText.y = 10;
     this.addChild(this.fpsText);
 
-    // Position in top-left
     this.x = 10;
     this.y = 10;
   }
@@ -40,8 +31,7 @@ export class FPSCounter extends Container {
     const currentTime = performance.now();
     const elapsed = currentTime - this.lastTime;
 
-    // Update FPS every 500ms
-    if (elapsed >= 500) {
+    if (elapsed >= this.updateInterval) {
       this.fps = Math.round((this.frameCount / elapsed) * 1000);
       this.fpsText.text = `FPS: ${this.fps}`;
 
