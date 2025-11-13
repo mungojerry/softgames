@@ -6,7 +6,7 @@ import { Colors } from "../styles/Colors";
 import { SceneUI } from "../ui/SceneUI";
 import gsap from "gsap";
 
-export class PhenixFlamesScene extends Scene {
+export class PheonixFlamesScene extends Scene {
   private flames: Graphics[] = [];
 
   constructor(private sceneManager: SceneManager) {

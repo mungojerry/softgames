@@ -4,12 +4,12 @@ import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
 import { Colors } from "../styles/Colors";
 import { SceneUI } from "../ui/SceneUI";
-import { AcesOfShadowsGame } from "../games/aceofshadows/AceOfShadowsGame";
+import { AceOfShadowsGame } from "../games/aceofshadows/AceOfShadowsGame";
 import gsap from "gsap";
 
 export class AceOfShadowsScene extends Scene {
   private shadowParticles: Graphics[] = [];
-  private game: AcesOfShadowsGame | null = null;
+  private game: AceOfShadowsGame | null = null;
 
   constructor(private sceneManager: SceneManager) {
     super();
@@ -43,7 +43,7 @@ export class AceOfShadowsScene extends Scene {
   }
 
   private startGame(): void {
-    this.game = new AcesOfShadowsGame(this.sceneManager.getApp());
+    this.game = new AceOfShadowsGame(this.sceneManager.getApp());
     const centerX = this.sceneManager.getAppWidth() / 2;
     const centerY = this.sceneManager.getAppHeight() / 1.5;
     this.game.createCards(this, centerX, centerY);

@@ -33,12 +33,9 @@ export class CardStack {
   }
 
   public getNextCardPosition(): { x: number; y: number } {
-    const cardIndex = this.cards.length;
-    // Add small random variation to x position
-    const randomX = 0; // Math.random() * 20 - 10;
     return {
-      x: this.x + randomX,
-      y: this.baseY, // + cardIndex * this.cardOffsetY,
+      x: this.x,
+      y: this.baseY,
     };
   }
 

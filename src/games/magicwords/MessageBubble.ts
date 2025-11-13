@@ -158,23 +158,18 @@ export class MessageBubble extends Container {
               `Error creating emoji sprite for '${part.content}':`,
               error
             );
-            // Fall through to text fallback below
+            // Fall through to create fallback below
           }
-        } else {
-          // Fallback: show emoji name as text if texture not found
-          const fallbackText = new Text(`[${part.content}]`, {
-            fontFamily: "Arial",
-            fontSize: fontSize - 2,
-            fill: this.isLeft ? 0x666666 : 0xcccccc,
-            fontStyle: "italic",
-          });
+        }
 
+        // If emoji failed to load or isn't valid, create fallback
+        if (!emojiTexture || !emojiTexture.valid) {
+          // Create circular placeholder with first letter
           const emojiSpacing = 4;
 
-          // Check if fallback text needs to wrap
+          // Check if emoji placeholder needs to wrap
           if (
-            currentX + emojiSpacing + fallbackText.width >
-              this.PADDING + maxWidth &&
+            currentX + emojiSpacing + emojiSize > this.PADDING + maxWidth &&
             currentX > this.PADDING
           ) {
             currentY += fontSize + lineSpacing;
@@ -184,10 +179,32 @@ export class MessageBubble extends Container {
             currentX += emojiSpacing;
           }
 
-          fallbackText.x = currentX;
-          fallbackText.y = currentY;
-          this.textContainer.addChild(fallbackText);
-          currentX += fallbackText.width + emojiSpacing;
+          const emojiPlaceholder = new Container();
+
+          // Draw circle background
+          const circle = new Graphics();
+          circle.beginFill(this.isLeft ? 0xcccccc : 0x666666);
+          circle.drawCircle(emojiSize / 2, emojiSize / 2, emojiSize / 2);
+          circle.endFill();
+          emojiPlaceholder.addChild(circle);
+
+          // Add first letter of emoji name with question mark
+          const firstLetter = part.content.charAt(0).toUpperCase();
+          const label = new Text(`?`, {
+            fontFamily: "Arial",
+            fontSize: emojiSize * 0.6,
+            fill: this.isLeft ? 0x666666 : 0xcccccc,
+            fontWeight: "bold",
+          });
+          label.anchor.set(0.5);
+          label.x = emojiSize / 2;
+          label.y = emojiSize / 2;
+          emojiPlaceholder.addChild(label);
+
+          emojiPlaceholder.x = currentX;
+          emojiPlaceholder.y = currentY;
+          this.textContainer.addChild(emojiPlaceholder);
+          currentX += emojiSize + emojiSpacing;
         }
       }
     });

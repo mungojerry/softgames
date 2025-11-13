@@ -1,14 +1,13 @@
-import { Graphics, Text } from "pixi.js";
-import { Scene } from "./Scene";
-import { SceneManager } from "./SceneManager";
+import gsap from "gsap";
+import { Graphics } from "pixi.js";
+import { UIConfig } from "../styles/UIConfig";
+import { Button } from "../ui/Button";
+import { Label } from "../ui/Label";
 import { AceOfShadowsScene } from "./AceOfShadowsScene";
 import { MagicWordsScene } from "./MagicWordsScene";
-import { PhenixFlamesScene } from "./PhenixFlamesScene";
-import { Colors } from "../styles/Colors";
-import { UIConfig } from "../styles/UIConfig";
-import { Label } from "../ui/Label";
-import { Button } from "../ui/Button";
-import gsap from "gsap";
+import { PheonixFlamesScene } from "./PheonixFlamesScene";
+import { Scene } from "./Scene";
+import { SceneManager } from "./SceneManager";
 
 export class MainMenuScene extends Scene {
   private particles: Graphics[] = [];
@@ -61,9 +60,9 @@ export class MainMenuScene extends Scene {
       y: UIConfig.POSITION.TITLE_Y,
       anchor: { x: 0.5, y: 0.5 },
       style: {
-        fontFamily: "'Cinzel Decorative', Arial, sans-serif",
-        fontSize: 100,
-        fontWeight: "900",
+        fontFamily: "'Orbitron', Arial, sans-serif",
+        fontSize: 80,
+        fontWeight: "800",
         fill: 0x4a3a22,
         align: "center",
         letterSpacing: 6,
@@ -82,7 +81,7 @@ export class MainMenuScene extends Scene {
       { name: "MAGIC WORDS", scene: MagicWordsScene },
       {
         name: "PHOENIX FLAMES",
-        scene: PhenixFlamesScene,
+        scene: PheonixFlamesScene,
       },
     ];
 
@@ -98,9 +97,9 @@ export class MainMenuScene extends Scene {
           this.sceneManager.changeScene(new game.scene(this.sceneManager));
         },
         style: {
-          fontFamily: "'Cinzel Decorative', Arial, sans-serif",
+          fontFamily: "'Orbitron', Arial, sans-serif",
           fontSize: 35,
-          fontWeight: "700",
+          fontWeight: "600",
           fill: 0xf5e2c4,
           align: "center",
           letterSpacing: 2,

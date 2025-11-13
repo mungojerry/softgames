@@ -2,7 +2,7 @@ import { Texture, Application, Container } from "pixi.js";
 import { Card } from "./Card";
 import { CardStack } from "./CardStack";
 
-export class AcesOfShadowsGame {
+export class AceOfShadowsGame {
   private cards: Card[] = [];
   private stacks: CardStack[] = [];
   private readonly TOTAL_CARDS = 144;
@@ -78,25 +78,15 @@ export class AcesOfShadowsGame {
 
     // If main stack is empty, stop
     if (this.stacks[sourceStackIndex].isEmpty()) {
-      console.log("Main stack is empty - stopping");
       return;
     }
 
     // Current destination stack (cycles through 1, 2, 3, 4)
     const destStackIndex = this.currentDestStackIndex;
 
-    console.log(
-      `Moving card from main stack (${this.stacks[
-        sourceStackIndex
-      ].getCardCount()} cards) to stack ${destStackIndex} (${this.stacks[
-        destStackIndex
-      ].getCardCount()} cards)`
-    );
-
     // Get the top card from the main stack
     const card = this.stacks[sourceStackIndex].removeTopCard();
     if (!card) {
-      console.log("No card returned from removeTopCard");
       return;
     }
 
