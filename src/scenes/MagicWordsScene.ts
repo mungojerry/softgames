@@ -5,10 +5,10 @@ import { MainMenuScene } from "./MainMenuScene";
 import { TextStyles } from "../styles/TextStyles";
 import { Colors } from "../styles/Colors";
 import { SceneUI } from "../ui/SceneUI";
+import gsap from "gsap";
 
 export class MagicWordsScene extends Scene {
   private floatingWords: Text[] = [];
-  private time: number = 0;
 
   constructor(private sceneManager: SceneManager) {
     super();
@@ -25,18 +25,13 @@ export class MagicWordsScene extends Scene {
   }
 
   onExit(): void {
-    this.removeChildren();
+    this.floatingWords.forEach((word) => gsap.killTweensOf(word));
     this.floatingWords = [];
+    this.removeChildren();
   }
 
   update(delta: number): void {
-    this.time += delta * 0.05;
-
-    // Animate floating words
-    this.floatingWords.forEach((word, index) => {
-      word.y += Math.sin(this.time + index) * 0.5;
-      word.rotation = Math.sin(this.time + index * 0.5) * 0.1;
-    });
+    // GSAP handles animation, no manual update needed
   }
 
   private createFloatingWords(): void {
@@ -45,12 +40,31 @@ export class MagicWordsScene extends Scene {
     words.forEach((word, index) => {
       const text = new Text(word, TextStyles.MAGIC_WORD);
       text.anchor.set(0.5);
-      text.x = 150 + (index % 3) * 400;
-      text.y = 300 + Math.floor(index / 3) * 150;
+      const baseX = 150 + (index % 3) * 400;
+      const baseY = 300 + Math.floor(index / 3) * 150;
+      text.x = baseX;
+      text.y = baseY;
       text.alpha = 0.7;
 
       this.floatingWords.push(text);
       this.addChild(text);
+
+      // Animate floating with GSAP
+      gsap.to(text, {
+        y: baseY - 20,
+        duration: 2 + index * 0.3,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+      });
+
+      gsap.to(text, {
+        rotation: 0.1,
+        duration: 1.5 + index * 0.2,
+        ease: "sine.inOut",
+        yoyo: true,
+        repeat: -1,
+      });
     });
   }
 }

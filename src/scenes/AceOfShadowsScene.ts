@@ -4,6 +4,7 @@ import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
 import { Colors } from "../styles/Colors";
 import { SceneUI } from "../ui/SceneUI";
+import gsap from "gsap";
 
 export class AceOfShadowsScene extends Scene {
   private shadowParticles: Graphics[] = [];
@@ -19,39 +20,46 @@ export class AceOfShadowsScene extends Scene {
     ui.addBackButton(Colors.BTN_SHADOWS, () =>
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
-    this.createShadowEffects();
+    this.createShadowParticles();
   }
 
   onExit(): void {
-    this.removeChildren();
+    this.shadowParticles.forEach((particle) => gsap.killTweensOf(particle));
     this.shadowParticles = [];
+    this.removeChildren();
   }
 
   update(delta: number): void {
-    // Animate shadow particles
-    this.shadowParticles.forEach((particle) => {
-      particle.y += 2 * delta;
-      particle.alpha -= 0.01 * delta;
-
-      if (particle.alpha <= 0) {
-        particle.y = 0;
-        particle.alpha = 0.5;
-      }
-    });
+    // GSAP handles animation, no manual update needed
   }
 
-  private createShadowEffects(): void {
+  private createShadowParticles(): void {
     for (let i = 0; i < 20; i++) {
       const particle = new Graphics();
+      const radius = Math.random() * 10 + 5;
       particle.beginFill(Colors.SHADOW_PARTICLE);
-      particle.drawCircle(0, 0, Math.random() * 10 + 5);
+      particle.drawCircle(0, 0, radius);
       particle.endFill();
       particle.x = Math.random() * this.sceneManager.getAppWidth();
       particle.y = Math.random() * this.sceneManager.getAppHeight();
       particle.alpha = Math.random() * 0.5;
-
-      this.shadowParticles.push(particle);
       this.addChild(particle);
+      this.shadowParticles.push(particle);
+
+      // Animate shadow falling with GSAP
+      gsap.to(particle, {
+        y: "+=" + (this.sceneManager.getAppHeight() + 100),
+        alpha: 0,
+        duration: 3 + Math.random() * 2,
+        ease: "none",
+        repeat: -1,
+        repeatDelay: 0,
+        onRepeat: () => {
+          particle.y = -50;
+          particle.alpha = Math.random() * 0.5;
+          particle.x = Math.random() * this.sceneManager.getAppWidth();
+        },
+      });
     }
   }
 }

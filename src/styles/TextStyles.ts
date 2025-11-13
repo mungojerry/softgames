@@ -2,7 +2,7 @@ import { TextStyle } from "pixi.js";
 
 export class TextStyles {
   static readonly TITLE = new TextStyle({
-    fontFamily: "Arial, sans-serif",
+    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
     fontSize: 80,
     fontWeight: "bold",
     fill: "#ffffff",
@@ -18,7 +18,7 @@ export class TextStyles {
   });
 
   static readonly SCENE_TITLE_SHADOWS = new TextStyle({
-    fontFamily: "Arial",
+    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
     fontSize: 72,
     fontWeight: "bold",
     fill: ["#8b0000", "#000000"],
@@ -32,7 +32,7 @@ export class TextStyles {
   });
 
   static readonly SCENE_TITLE_MAGIC = new TextStyle({
-    fontFamily: "Arial",
+    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
     fontSize: 72,
     fontWeight: "bold",
     fill: ["#9370db", "#4b0082"],
@@ -46,7 +46,7 @@ export class TextStyles {
   });
 
   static readonly SCENE_TITLE_FLAMES = new TextStyle({
-    fontFamily: "Arial",
+    fontFamily: "Cinzel Decorative', Arial, sans-serif",
     fontSize: 72,
     fontWeight: "bold",
     fill: ["#ff4500", "#ffa500", "#ff0000"],
@@ -60,21 +60,21 @@ export class TextStyles {
   });
 
   static readonly BUTTON = new TextStyle({
-    fontFamily: "Arial, sans-serif",
-    fontSize: 32,
+    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
+    fontSize: 24,
     fontWeight: "bold",
     fill: "#ffffff",
     letterSpacing: 1,
   });
 
   static readonly BUTTON_SMALL = new TextStyle({
-    fontFamily: "Arial",
-    fontSize: 24,
+    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
+    fontSize: 16,
     fill: 0xffffff,
   });
 
   static readonly MAGIC_WORD = new TextStyle({
-    fontFamily: "Arial",
+    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
     fontSize: 36,
     fill: 0x9370db,
     fontStyle: "italic",

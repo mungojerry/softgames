@@ -14,24 +14,29 @@ export class Label extends Text {
       x?: number;
       y?: number;
       anchor?: { x: number; y: number };
+      style?: any;
     } = {}
   ) {
     let textStyle;
-    switch (style) {
-      case "title":
-        textStyle = TextStyles.TITLE;
-        break;
-      case "button":
-        textStyle = TextStyles.BUTTON;
-        break;
-      case "buttonSmall":
-        textStyle = TextStyles.BUTTON_SMALL;
-        break;
-      case "magicWord":
-        textStyle = TextStyles.MAGIC_WORD;
-        break;
-      default:
-        textStyle = TextStyles.BUTTON;
+    if (options.style) {
+      textStyle = options.style;
+    } else {
+      switch (style) {
+        case "title":
+          textStyle = TextStyles.TITLE;
+          break;
+        case "button":
+          textStyle = TextStyles.BUTTON;
+          break;
+        case "buttonSmall":
+          textStyle = TextStyles.BUTTON_SMALL;
+          break;
+        case "magicWord":
+          textStyle = TextStyles.MAGIC_WORD;
+          break;
+        default:
+          textStyle = TextStyles.BUTTON;
+      }
     }
     super(text, textStyle);
     if (options.anchor) {

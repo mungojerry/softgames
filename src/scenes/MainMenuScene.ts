@@ -8,50 +8,51 @@ import { Colors } from "../styles/Colors";
 import { UIConfig } from "../styles/UIConfig";
 import { Label } from "../ui/Label";
 import { Button } from "../ui/Button";
+import gsap from "gsap";
 
 export class MainMenuScene extends Scene {
   private particles: Graphics[] = [];
-  private time: number = 0;
 
   constructor(private sceneManager: SceneManager) {
     super();
   }
 
   onEnter(): void {
-    this.createBackgroundParticles();
+    this.createParchmentBackground();
     this.createTitle();
     this.createMenuButtons();
   }
 
   onExit(): void {
+    this.particles.forEach((particle) => gsap.killTweensOf(particle));
     this.particles = [];
     this.removeChildren();
   }
 
   update(delta: number): void {
-    this.time += delta * 0.01;
-
-    // Animate background particles
-    this.particles.forEach((particle, index) => {
-      particle.alpha = 0.15 + Math.sin(this.time + index) * 0.1;
-    });
+    // No manual update needed
   }
-  private createBackgroundParticles(): void {
-    for (let i = 0; i < 15; i++) {
-      const particle = new Graphics();
-      const size = Math.random() * 3 + 1;
 
-      particle.beginFill(0xffffff, 0.2);
-      particle.drawCircle(0, 0, size);
-      particle.endFill();
-
-      particle.x = Math.random() * this.sceneManager.getAppWidth();
-      particle.y = Math.random() * this.sceneManager.getAppHeight();
-      particle.alpha = Math.random() * 0.3;
-
-      this.particles.push(particle);
-      this.addChild(particle);
-    }
+  private createParchmentBackground(): void {
+    // Draw parchment background
+    const bg = new Graphics();
+    bg.beginFill(0xf5e2c4); // parchment color
+    bg.drawRect(
+      0,
+      0,
+      this.sceneManager.getAppWidth(),
+      this.sceneManager.getAppHeight()
+    );
+    bg.endFill();
+    // Draw thick dark border
+    bg.lineStyle(10, 0x4a3a22, 1);
+    bg.drawRect(
+      20,
+      20,
+      this.sceneManager.getAppWidth() - 40,
+      this.sceneManager.getAppHeight() - 40
+    );
+    this.addChild(bg);
   }
 
   private createTitle(): void {
@@ -59,6 +60,15 @@ export class MainMenuScene extends Scene {
       x: this.sceneManager.getAppWidth() / 2,
       y: UIConfig.POSITION.TITLE_Y,
       anchor: { x: 0.5, y: 0.5 },
+      style: {
+        fontFamily: "'Cinzel Decorative', Arial, sans-serif",
+        fontSize: 100,
+        fontWeight: "900",
+        fill: 0x4a3a22,
+        align: "center",
+        letterSpacing: 6,
+        dropShadow: false,
+      },
     });
     this.addChild(title);
   }
@@ -66,15 +76,13 @@ export class MainMenuScene extends Scene {
   private createMenuButtons(): void {
     const games = [
       {
-        name: "Ace of Shadows",
+        name: "ACE OF SHADOWS",
         scene: AceOfShadowsScene,
-        color: Colors.BTN_SHADOWS,
       },
-      { name: "Magic Words", scene: MagicWordsScene, color: Colors.BTN_MAGIC },
+      { name: "MAGIC WORDS", scene: MagicWordsScene },
       {
-        name: "Phenix Flames",
+        name: "PHOENIX FLAMES",
         scene: PhenixFlamesScene,
-        color: Colors.BTN_FLAMES,
       },
     ];
 
@@ -83,9 +91,19 @@ export class MainMenuScene extends Scene {
     const spacing = UIConfig.SPACING.BUTTON;
 
     games.forEach((game, index) => {
-      const button = new Button(game.name, game.color, {
+      const button = new Button(game.name, 0x4a3a22, {
+        width: 600,
+        height: 110,
         onClick: () => {
           this.sceneManager.changeScene(new game.scene(this.sceneManager));
+        },
+        style: {
+          fontFamily: "'Cinzel Decorative', Arial, sans-serif",
+          fontSize: 35,
+          fontWeight: "700",
+          fill: 0xf5e2c4,
+          align: "center",
+          letterSpacing: 2,
         },
       });
       button.x = centerX;
