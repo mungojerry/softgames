@@ -4,7 +4,7 @@ import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
 import { Colors } from "../styles/Colors";
 import { SceneUI } from "../ui/SceneUI";
-import { AcesOfShadowsGame } from "../games/AcesOfShadowsGame";
+import { AcesOfShadowsGame } from "../games/aceofshadows/AceOfShadowsGame";
 import gsap from "gsap";
 
 export class AceOfShadowsScene extends Scene {
