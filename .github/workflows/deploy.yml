@@ -32,18 +32,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Increment build number
-        run: |
-          VERSION_FILE="version.json"
-          CURRENT_BUILD=$(jq -r '.build' $VERSION_FILE)
-          NEW_BUILD=$((CURRENT_BUILD + 1))
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          jq --arg build "$NEW_BUILD" --arg timestamp "$TIMESTAMP" '.build = ($build | tonumber) | .timestamp = $timestamp' $VERSION_FILE > tmp.$$.json && mv tmp.$$.json $VERSION_FILE
-          echo "Build number incremented to $NEW_BUILD"
-          cat $VERSION_FILE
-          # Copy updated version.json to dist folder
-          cp $VERSION_FILE dist/$VERSION_FILE
-          echo "✓ Copied version.json to dist/"
 
       - name: Build
         run: npm run build
