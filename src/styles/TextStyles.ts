@@ -2,14 +2,14 @@ import { TextStyle } from "pixi.js";
 
 export class TextStyles {
   static readonly TITLE = new TextStyle({
-    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
-    fontSize: 80,
-    fontWeight: "bold",
-    fill: "#ffffff",
-    stroke: "#333333",
+    fontFamily: "'Orbitron', Arial, sans-serif",
+    fontSize: 50,
+    fontWeight: "700",
+    fill: 0xffffff,
+    stroke: 0x333333,
     strokeThickness: 3,
     dropShadow: true,
-    dropShadowColor: "#000000",
+    dropShadowColor: 0x000000,
     dropShadowBlur: 10,
     dropShadowAngle: Math.PI / 4,
     dropShadowDistance: 6,
@@ -17,66 +17,25 @@ export class TextStyles {
     align: "center",
   });
 
-  static readonly SCENE_TITLE_SHADOWS = new TextStyle({
-    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
-    fontSize: 72,
-    fontWeight: "bold",
-    fill: ["#8b0000", "#000000"],
-    stroke: "#ffffff",
-    strokeThickness: 3,
-    dropShadow: true,
-    dropShadowColor: "#000000",
-    dropShadowBlur: 4,
-    dropShadowAngle: Math.PI / 6,
-    dropShadowDistance: 6,
-  });
-
-  static readonly SCENE_TITLE_MAGIC = new TextStyle({
-    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
-    fontSize: 72,
-    fontWeight: "bold",
-    fill: ["#9370db", "#4b0082"],
-    stroke: "#ffffff",
-    strokeThickness: 3,
-    dropShadow: true,
-    dropShadowColor: "#9370db",
-    dropShadowBlur: 10,
-    dropShadowAngle: Math.PI / 6,
-    dropShadowDistance: 6,
-  });
-
-  static readonly SCENE_TITLE_FLAMES = new TextStyle({
-    fontFamily: "Cinzel Decorative', Arial, sans-serif",
-    fontSize: 72,
-    fontWeight: "bold",
-    fill: ["#ff4500", "#ffa500", "#ff0000"],
-    stroke: "#8b0000",
-    strokeThickness: 4,
-    dropShadow: true,
-    dropShadowColor: "#ff4500",
-    dropShadowBlur: 15,
-    dropShadowAngle: Math.PI / 6,
-    dropShadowDistance: 8,
-  });
-
   static readonly BUTTON = new TextStyle({
-    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
+    fontFamily: "'Orbitron', Arial, sans-serif",
     fontSize: 24,
-    fontWeight: "bold",
-    fill: "#ffffff",
+    fontWeight: "500",
+    fill: 0xffffff,
     letterSpacing: 1,
   });
 
   static readonly BUTTON_SMALL = new TextStyle({
-    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
+    fontFamily: "'Orbitron', Arial, sans-serif",
     fontSize: 16,
+    fontWeight: "500",
     fill: 0xffffff,
   });
 
   static readonly MAGIC_WORD = new TextStyle({
-    fontFamily: "'Cinzel Decorative', Arial, sans-serif",
+    fontFamily: "'Orbitron', Arial, sans-serif",
     fontSize: 36,
+    fontWeight: "600",
     fill: 0x9370db,
-    fontStyle: "italic",
   });
 }
