@@ -19,7 +19,7 @@ export class UIConfig {
   static readonly POSITION = {
     TITLE_Y: 150,
     MENU_START_Y: 300,
-    BACK_BUTTON_X: 130,
+    BACK_BUTTON_X: 110,
     BACK_BUTTON_OFFSET_Y: 50,
   };
 }

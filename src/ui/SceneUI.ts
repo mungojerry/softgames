@@ -31,9 +31,10 @@ export class SceneUI {
   }
 
   addBackButton(color: number, onClick: () => void) {
-    const button = new Button("Back to Menu", color, {
+    const button = new Button("< Back", color, {
       small: true,
       onClick,
+      width: UIConfig.BUTTON_SMALL.WIDTH,
     });
     button.x = UIConfig.POSITION.BACK_BUTTON_X;
     button.y =
