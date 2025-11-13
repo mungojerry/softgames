@@ -1,4 +1,5 @@
 import { Container, Graphics } from "pixi.js";
+import gsap from "gsap";
 
 export type TransitionType =
   | "fade"
@@ -16,7 +17,7 @@ export class SceneTransition extends Container {
   private transitionType: TransitionType;
   private sceneWidth: number;
   private sceneHeight: number;
-  private onComplete?: () => void;
+  private currentTween?: gsap.core.Timeline;
 
   constructor(width: number, height: number) {
     super();
@@ -30,11 +31,16 @@ export class SceneTransition extends Container {
   }
 
   start(type: TransitionType, onComplete: () => void): void {
+    // Kill any existing tween
+    if (this.currentTween) {
+      this.currentTween.kill();
+    }
+
     this.transitionType = type;
-    this.onComplete = onComplete;
     this.isTransitioning = true;
     this.animationProgress = 0;
     this.visible = true;
+
     // Create mask if needed
     if (type === "softWipe" || type === "circle") {
       if (!this.transitionMask) {
@@ -49,13 +55,42 @@ export class SceneTransition extends Container {
         this.transitionMask = null;
       }
     }
+
+    // Use GSAP timeline for better control over the two-phase transition
+    const timeline = gsap.timeline({
+      onUpdate: () => this.updateTransition(),
+      onComplete: () => {
+        this.isTransitioning = false;
+        this.visible = false;
+      },
+    });
+
+    // Phase 1: Transition in (0 to 1)
+    timeline.to(this, {
+      animationProgress: 1,
+      duration: 0.4,
+      ease: "power2.in",
+      onComplete: () => {
+        if (onComplete) onComplete();
+      },
+    });
+
+    // Phase 2: Transition out (1 to 2)
+    timeline.to(this, {
+      animationProgress: 2,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+
+    this.currentTween = timeline;
   }
 
   update(delta: number): boolean {
-    if (!this.isTransitioning) return false;
+    // GSAP handles all animation timing
+    return !this.isTransitioning;
+  }
 
-    this.animationProgress += delta * 0.05;
-
+  private updateTransition(): void {
     this.overlay.clear();
 
     switch (this.transitionType) {
@@ -78,21 +113,6 @@ export class SceneTransition extends Container {
         this.updateSoftWipe();
         break;
     }
-
-    // Transition complete at progress 2 (1 = fully covered, 2 = fully revealed)
-    if (this.animationProgress >= 2) {
-      this.isTransitioning = false;
-      this.visible = false;
-      return true;
-    }
-
-    // Switch scene at halfway point
-    if (this.animationProgress >= 1 && this.onComplete) {
-      this.onComplete();
-      this.onComplete = undefined;
-    }
-
-    return false;
   }
 
   /**
@@ -112,7 +132,6 @@ export class SceneTransition extends Container {
     const edgeWidth = 60; // Soft edge width
 
     // Draw black overlay
-    this.overlay.clear();
     this.overlay.beginFill(0x000000);
     this.overlay.drawRect(0, 0, wipeX, this.sceneHeight);
     this.overlay.endFill();
@@ -208,7 +227,6 @@ export class SceneTransition extends Container {
     }
 
     // Draw black overlay
-    this.overlay.clear();
     this.overlay.beginFill(0x000000);
     this.overlay.drawRect(0, 0, this.sceneWidth, this.sceneHeight);
     this.overlay.endFill();
@@ -223,6 +241,9 @@ export class SceneTransition extends Container {
   }
 
   reset(): void {
+    if (this.currentTween) {
+      this.currentTween.kill();
+    }
     this.isTransitioning = false;
     this.animationProgress = 0;
     this.visible = false;
