@@ -8,7 +8,7 @@ export class AcesOfShadowsGame {
   private readonly TOTAL_CARDS = 144;
   private readonly NUM_STACKS = 5; // 1 main stack + 4 destination stacks
   private readonly CARD_OFFSET_Y = 2; // Vertical offset to show stacking
-  private readonly STACK_SPACING = 150;
+  private readonly STACK_SPACING = 200;
   private animationInterval: number | null = null;
   private cardTexture: Texture;
   private currentDestStackIndex = 1; // Start with stack 1 (skip main stack at index 0)
@@ -26,7 +26,8 @@ export class AcesOfShadowsGame {
     centerY: number
   ): void {
     // Initialize 5 stacks (1 main + 4 destination)
-    const startX = centerX - (this.NUM_STACKS * this.STACK_SPACING) / 2;
+    const totalWidth = (this.NUM_STACKS - 1) * this.STACK_SPACING;
+    const startX = centerX - totalWidth / 2;
     const baseY = centerY - (this.TOTAL_CARDS * this.CARD_OFFSET_Y) / 2;
 
     for (let i = 0; i < this.NUM_STACKS; i++) {

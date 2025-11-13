@@ -45,7 +45,7 @@ export class AceOfShadowsScene extends Scene {
   private startGame(): void {
     this.game = new AcesOfShadowsGame(this.sceneManager.getApp());
     const centerX = this.sceneManager.getAppWidth() / 2;
-    const centerY = this.sceneManager.getAppHeight() / 2;
+    const centerY = this.sceneManager.getAppHeight() / 1.5;
     this.game.createCards(this, centerX, centerY);
   }
 
