@@ -3,8 +3,7 @@ import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
 import { Colors } from "../styles/Colors";
-import { UIConfig } from "../styles/UIConfig";
-import { UIHelpers } from "../utils/UIHelpers";
+import { SceneUI } from "../ui/SceneUI";
 
 export class AceOfShadowsScene extends Scene {
   private shadowParticles: Graphics[] = [];
@@ -14,9 +13,12 @@ export class AceOfShadowsScene extends Scene {
   }
 
   onEnter(): void {
-    this.createBackground();
-    this.createTitle();
-    this.createBackButton();
+    const ui = new SceneUI(this, this.sceneManager);
+    ui.addBackground(Colors.BG_SHADOWS);
+    ui.addTitle("ACE OF SHADOWS", 100);
+    ui.addBackButton(Colors.BTN_SHADOWS, () =>
+      this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
+    );
     this.createShadowEffects();
   }
 
@@ -36,35 +38,6 @@ export class AceOfShadowsScene extends Scene {
         particle.alpha = 0.5;
       }
     });
-  }
-
-  private createBackground(): void {
-    const bg = UIHelpers.createBackground(
-      this.sceneManager.getAppWidth(),
-      this.sceneManager.getAppHeight(),
-      Colors.BG_SHADOWS
-    );
-    this.addChild(bg);
-  }
-
-  private createTitle(): void {
-    const title = UIHelpers.createTitle(
-      "ACE OF SHADOWS",
-      this.sceneManager.getAppWidth() / 2,
-      100
-    );
-    this.addChild(title);
-  }
-
-  private createBackButton(): void {
-    const button = UIHelpers.createBackButton(
-      () => this.sceneManager.changeScene(new MainMenuScene(this.sceneManager)),
-      Colors.BTN_SHADOWS
-    );
-    button.x = UIConfig.POSITION.BACK_BUTTON_X;
-    button.y =
-      this.sceneManager.getAppHeight() - UIConfig.POSITION.BACK_BUTTON_OFFSET_Y;
-    this.addChild(button);
   }
 
   private createShadowEffects(): void {

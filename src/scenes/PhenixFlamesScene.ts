@@ -3,8 +3,7 @@ import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
 import { Colors } from "../styles/Colors";
-import { UIConfig } from "../styles/UIConfig";
-import { UIHelpers } from "../utils/UIHelpers";
+import { SceneUI } from "../ui/SceneUI";
 
 export class PhenixFlamesScene extends Scene {
   private flames: Graphics[] = [];
@@ -14,9 +13,12 @@ export class PhenixFlamesScene extends Scene {
   }
 
   onEnter(): void {
-    this.createBackground();
-    this.createTitle();
-    this.createBackButton();
+    const ui = new SceneUI(this, this.sceneManager);
+    ui.addBackground(Colors.BG_FLAMES);
+    ui.addTitle("PHENIX FLAMES", 100);
+    ui.addBackButton(Colors.BTN_FLAMES, () =>
+      this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
+    );
     this.createFlameEffects();
   }
 
@@ -37,35 +39,6 @@ export class PhenixFlamesScene extends Scene {
         flame.scale.x = 1;
       }
     });
-  }
-
-  private createBackground(): void {
-    const bg = UIHelpers.createBackground(
-      this.sceneManager.getAppWidth(),
-      this.sceneManager.getAppHeight(),
-      Colors.BG_FLAMES
-    );
-    this.addChild(bg);
-  }
-
-  private createTitle(): void {
-    const title = UIHelpers.createTitle(
-      "PHENIX FLAMES",
-      this.sceneManager.getAppWidth() / 2,
-      100
-    );
-    this.addChild(title);
-  }
-
-  private createBackButton(): void {
-    const button = UIHelpers.createBackButton(
-      () => this.sceneManager.changeScene(new MainMenuScene(this.sceneManager)),
-      Colors.BTN_FLAMES
-    );
-    button.x = UIConfig.POSITION.BACK_BUTTON_X;
-    button.y =
-      this.sceneManager.getAppHeight() - UIConfig.POSITION.BACK_BUTTON_OFFSET_Y;
-    this.addChild(button);
   }
 
   private createFlameEffects(): void {

@@ -4,8 +4,7 @@ import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
 import { TextStyles } from "../styles/TextStyles";
 import { Colors } from "../styles/Colors";
-import { UIConfig } from "../styles/UIConfig";
-import { UIHelpers } from "../utils/UIHelpers";
+import { SceneUI } from "../ui/SceneUI";
 
 export class MagicWordsScene extends Scene {
   private floatingWords: Text[] = [];
@@ -16,9 +15,12 @@ export class MagicWordsScene extends Scene {
   }
 
   onEnter(): void {
-    this.createBackground();
-    this.createTitle();
-    this.createBackButton();
+    const ui = new SceneUI(this, this.sceneManager);
+    ui.addBackground(Colors.BG_MAGIC);
+    ui.addTitle("MAGIC WORDS", 100);
+    ui.addBackButton(Colors.BTN_MAGIC, () =>
+      this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
+    );
     this.createFloatingWords();
   }
 
@@ -35,35 +37,6 @@ export class MagicWordsScene extends Scene {
       word.y += Math.sin(this.time + index) * 0.5;
       word.rotation = Math.sin(this.time + index * 0.5) * 0.1;
     });
-  }
-
-  private createBackground(): void {
-    const bg = UIHelpers.createBackground(
-      this.sceneManager.getAppWidth(),
-      this.sceneManager.getAppHeight(),
-      Colors.BG_MAGIC
-    );
-    this.addChild(bg);
-  }
-
-  private createTitle(): void {
-    const title = UIHelpers.createTitle(
-      "MAGIC WORDS",
-      this.sceneManager.getAppWidth() / 2,
-      100
-    );
-    this.addChild(title);
-  }
-
-  private createBackButton(): void {
-    const button = UIHelpers.createBackButton(
-      () => this.sceneManager.changeScene(new MainMenuScene(this.sceneManager)),
-      Colors.BTN_MAGIC
-    );
-    button.x = UIConfig.POSITION.BACK_BUTTON_X;
-    button.y =
-      this.sceneManager.getAppHeight() - UIConfig.POSITION.BACK_BUTTON_OFFSET_Y;
-    this.addChild(button);
   }
 
   private createFloatingWords(): void {

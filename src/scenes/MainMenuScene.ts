@@ -6,7 +6,8 @@ import { MagicWordsScene } from "./MagicWordsScene";
 import { PhenixFlamesScene } from "./PhenixFlamesScene";
 import { Colors } from "../styles/Colors";
 import { UIConfig } from "../styles/UIConfig";
-import { UIHelpers } from "../utils/UIHelpers";
+import { Label } from "../ui/Label";
+import { Button } from "../ui/Button";
 
 export class MainMenuScene extends Scene {
   private particles: Graphics[] = [];
@@ -54,10 +55,11 @@ export class MainMenuScene extends Scene {
   }
 
   private createTitle(): void {
-    const title = UIHelpers.createTitle(
-      "MAIN MENU",
-      this.sceneManager.getAppWidth() / 2
-    );
+    const title = new Label("MAIN MENU", "title", {
+      x: this.sceneManager.getAppWidth() / 2,
+      y: UIConfig.POSITION.TITLE_Y,
+      anchor: { x: 0.5, y: 0.5 },
+    });
     this.addChild(title);
   }
 
@@ -81,7 +83,7 @@ export class MainMenuScene extends Scene {
     const spacing = UIConfig.SPACING.BUTTON;
 
     games.forEach((game, index) => {
-      const button = UIHelpers.createButton(game.name, game.color, {
+      const button = new Button(game.name, game.color, {
         onClick: () => {
           this.sceneManager.changeScene(new game.scene(this.sceneManager));
         },
