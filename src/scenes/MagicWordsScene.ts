@@ -1,6 +1,7 @@
 import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
+import { SceneConfig } from "./SceneConfig";
 import { Colors } from "../styles/Colors";
 import { SceneUI } from "../ui/SceneUI";
 import { MagicWordsGame } from "../games/magicwords/MagicWordsGame";
@@ -47,8 +48,11 @@ export class MagicWordsScene extends Scene {
     const height = this.sceneManager.getAppHeight();
 
     // Create game with phone-like dimensions
-    const gameWidth = Math.min(500, width - 40);
-    const gameHeight = height - 200; // Leave space for title and back button
+    const gameWidth = Math.min(
+      SceneConfig.MAGIC_WORDS_MAX_WIDTH,
+      width - SceneConfig.MAGIC_WORDS_PADDING
+    );
+    const gameHeight = height - SceneConfig.MAGIC_WORDS_HEIGHT_OFFSET;
 
     // Optional: Pass an endpoint URL to load dialogue data from
     // Example: 'https://api.example.com/dialogue'
@@ -63,6 +67,10 @@ export class MagicWordsScene extends Scene {
 
     this.game = new MagicWordsGame(gameWidth, gameHeight, dataEndpoint);
 
-    await this.game.start(this, (width - gameWidth) / 2, 50);
+    await this.game.start(
+      this,
+      (width - gameWidth) / 2,
+      SceneConfig.MAGIC_WORDS_START_Y
+    );
   }
 }

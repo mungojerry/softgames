@@ -1,4 +1,5 @@
 import { BLEND_MODES, Container, Sprite, Texture } from "pixi.js";
+import { PhoenixFlamesConfig } from "./PhoenixFlamesConfig";
 import gsap from "gsap";
 
 interface Particle {
@@ -8,7 +9,6 @@ interface Particle {
 
 export class PhoenixFlamesGame {
   private particles: Particle[] = [];
-  private readonly MAX_PARTICLES = 10;
   private fireTexture: Texture;
   private emissionInterval: number | null = null;
   private container: Container | null = null;
@@ -51,9 +51,9 @@ export class PhoenixFlamesGame {
   }
 
   private initializeParticlePool(): void {
-    for (let i = 0; i < this.MAX_PARTICLES; i++) {
+    for (let i = 0; i < PhoenixFlamesConfig.MAX_PARTICLES; i++) {
       const sprite = new Sprite(this.fireTexture);
-      sprite.anchor.set(0.5);
+      sprite.anchor.set(PhoenixFlamesConfig.SPRITE_ANCHOR);
       sprite.visible = false;
       sprite.blendMode = BLEND_MODES.ADD;
 
@@ -67,77 +67,87 @@ export class PhoenixFlamesGame {
   }
 
   private startEmission(): void {
-    // Emit a new particle every 200ms
+    // Emit a new particle at configured interval
     this.emissionInterval = window.setInterval(() => {
       this.emitParticle();
-    }, 200);
+    }, PhoenixFlamesConfig.EMISSION_INTERVAL_MS);
   }
 
   private emitParticle(): void {
-    // Find an inactive particle to reuse
-    const particle = this.particles.find((p) => !p.active);
+    // Find inactive particle or reuse oldest
+    let particle = this.particles.find((p) => !p.active);
 
     if (!particle) {
-      return;
+      // All particles active, reuse oldest
+      particle = this.particles[0];
+      gsap.killTweensOf(particle.sprite);
+      gsap.killTweensOf(particle.sprite.scale);
     }
 
-    // Activate and reset the particle
     particle.active = true;
-    particle.sprite.visible = true;
+    const sprite = particle.sprite;
+    sprite.visible = true;
 
-    // Random starting position at the bottom center area
-    const startX = this.startPosition.x + (Math.random() - 0.5) * 5;
-    const startY = this.startPosition.y;
+    // Reset sprite
+    sprite.x = PhoenixFlamesConfig.INITIAL_X;
+    sprite.y = PhoenixFlamesConfig.INITIAL_Y;
+    sprite.alpha = PhoenixFlamesConfig.INITIAL_ALPHA;
+    sprite.scale.set(PhoenixFlamesConfig.INITIAL_SCALE);
+    sprite.rotation = 0;
 
-    particle.sprite.x = startX;
-    particle.sprite.y = startY;
-    particle.sprite.alpha = 1;
-    particle.sprite.scale.set(0.07 + Math.random() * 0.03);
-    particle.sprite.rotation = Math.random() * Math.PI * 2;
+    // Calculate random trajectory
+    const randomX =
+      (Math.random() - PhoenixFlamesConfig.RANDOM_X_CENTER) *
+      PhoenixFlamesConfig.RANDOM_X_RANGE;
+    const randomY =
+      -PhoenixFlamesConfig.BASE_RISE_DISTANCE -
+      Math.random() * PhoenixFlamesConfig.RANDOM_Y_RANGE;
+    const randomRotation =
+      (Math.random() - PhoenixFlamesConfig.RANDOM_ROTATION_CENTER) *
+      PhoenixFlamesConfig.ROTATION_MAX_RADIANS;
+    const randomScale =
+      PhoenixFlamesConfig.MIN_SCALE +
+      Math.random() *
+        (PhoenixFlamesConfig.MAX_SCALE - PhoenixFlamesConfig.MIN_SCALE);
 
-    const endX = startX + (Math.random() - 0.5) * 0.5;
-    const endY = startY - this.gameHeight * 0.2 - Math.random() * 5;
-
-    // Animate with GSAP - use timeline for better performance
-    const duration = 1 + Math.random() * 0.5;
-    const targetScaleX = particle.sprite.scale.x * 10;
-    const targetScaleY = particle.sprite.scale.y * 10;
-
-    const timeline = gsap.timeline({
+    // Animate particle with timeline
+    const tl = gsap.timeline({
       onComplete: () => {
-        // Deactivate particle for reuse
-        particle.active = false;
-        particle.sprite.visible = false;
+        particle!.active = false;
+        sprite.visible = false;
       },
     });
 
-    // Upward movement with fade out
-    timeline.to(
-      particle.sprite,
+    // Movement and fade
+    tl.to(sprite, {
+      x: randomX,
+      y: randomY,
+      alpha: PhoenixFlamesConfig.TARGET_ALPHA,
+      duration: PhoenixFlamesConfig.MOVE_DURATION,
+      ease: PhoenixFlamesConfig.MOVE_EASE,
+    });
+
+    // Scale up
+    tl.to(
+      sprite.scale,
       {
-        x: endX,
-        y: endY,
-        alpha: 0,
-        rotation:
-          particle.sprite.rotation + ((Math.random() - 0.5) * Math.PI) / 2,
-        duration,
-        ease: "power1.out",
+        x: randomScale,
+        y: randomScale,
+        duration: PhoenixFlamesConfig.SCALE_DURATION,
+        ease: PhoenixFlamesConfig.SCALE_EASE,
       },
-      0
+      PhoenixFlamesConfig.SCALE_START_TIME
     );
 
-    // Scale animation (grow then shrink) - runs parallel
-    timeline.to(
-      particle.sprite.scale,
+    // Rotation
+    tl.to(
+      sprite,
       {
-        x: targetScaleX,
-        y: targetScaleY,
-        duration: duration * 0.5,
-        ease: "power2.out",
-        yoyo: true,
-        repeat: 1,
+        rotation: randomRotation,
+        duration: PhoenixFlamesConfig.ROTATION_DURATION,
+        ease: PhoenixFlamesConfig.ROTATION_EASE,
       },
-      0
+      PhoenixFlamesConfig.ROTATION_START_TIME
     );
   }
 

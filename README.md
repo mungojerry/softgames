@@ -44,7 +44,7 @@ src/
 │   ├── MainMenuScene.ts      # Main menu with three buttons
 │   ├── AceOfShadowsScene.ts  # First game scene
 │   ├── MagicWordsScene.ts    # Second game scene
-│   └── PheonixFlamesScene.ts  # Third game scene
+│   └── PhoenixFlamesScene.ts  # Third game scene
 ```
 
 ## Technologies

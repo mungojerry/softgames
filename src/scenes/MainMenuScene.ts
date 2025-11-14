@@ -5,10 +5,10 @@ import { Button } from "../ui/Button";
 import { Label } from "../ui/Label";
 import { AceOfShadowsScene } from "./AceOfShadowsScene";
 import { MagicWordsScene } from "./MagicWordsScene";
-import { PheonixFlamesScene } from "./PheonixFlamesScene";
 import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 import { SceneConfig } from "./SceneConfig";
+import { PhoenixFlamesScene } from "./PhoenixFlamesScene";
 
 export class MainMenuScene extends Scene {
   constructor(private sceneManager: SceneManager) {
@@ -91,7 +91,7 @@ export class MainMenuScene extends Scene {
       { name: "MAGIC WORDS", scene: MagicWordsScene },
       {
         name: "PHOENIX FLAMES",
-        scene: PheonixFlamesScene,
+        scene: PhoenixFlamesScene,
       },
     ];
 
