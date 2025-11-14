@@ -1,6 +1,7 @@
 import { Container, Texture, Graphics, Text } from "pixi.js";
 import { MessageBubble } from "./MessageBubble";
 import { DialogueData, Avatar } from "./types";
+import { MagicWordsConfig } from "./MagicWordsConfig";
 import gsap from "gsap";
 
 export class MagicWordsGame {
@@ -15,8 +16,6 @@ export class MagicWordsGame {
   private currentMessageIndex = 0;
   private animationInterval: number | null = null;
   private maskGraphics: Graphics;
-  private readonly PHONE_BEZEL = 20;
-  private readonly PHONE_RADIUS = 30;
   private isDragging = false;
   private lastPointerY = 0;
   private autoScroll = true;
@@ -55,17 +54,17 @@ export class MagicWordsGame {
   }
 
   private createPhoneFrame(): void {
-    const totalWidth = this.containerWidth + this.PHONE_BEZEL * 2;
-    const totalHeight = this.containerHeight + this.PHONE_BEZEL * 2;
+    const totalWidth = this.containerWidth + MagicWordsConfig.PHONE_BEZEL * 2;
+    const totalHeight = this.containerHeight + MagicWordsConfig.PHONE_BEZEL * 2;
 
     // Phone outer frame (dark border)
     this.phoneFrame.beginFill(0x1a1a1a);
     this.phoneFrame.drawRoundedRect(
-      -this.PHONE_BEZEL,
-      -this.PHONE_BEZEL,
+      -MagicWordsConfig.PHONE_BEZEL,
+      -MagicWordsConfig.PHONE_BEZEL,
       totalWidth,
       totalHeight,
-      this.PHONE_RADIUS
+      MagicWordsConfig.PHONE_RADIUS
     );
     this.phoneFrame.endFill();
 
@@ -76,7 +75,7 @@ export class MagicWordsGame {
       0,
       this.containerWidth,
       this.containerHeight,
-      15
+      MagicWordsConfig.PHONE_INNER_RADIUS
     );
     this.phoneFrame.endFill();
   }
@@ -122,71 +121,86 @@ export class MagicWordsGame {
 
     // Error background
     const bg = new Graphics();
-    bg.beginFill(0xffffff, 0.95);
+    bg.beginFill(0xffffff, MagicWordsConfig.ERROR_BG_ALPHA);
     bg.drawRect(0, 0, this.containerWidth, this.containerHeight);
     bg.endFill();
     this.loadingContainer.addChild(bg);
 
     // Error icon (red X)
     const errorIcon = new Graphics();
-    errorIcon.lineStyle(6, 0xff4444);
-    errorIcon.moveTo(-20, -20);
-    errorIcon.lineTo(20, 20);
-    errorIcon.moveTo(20, -20);
-    errorIcon.lineTo(-20, 20);
+    const iconSize = MagicWordsConfig.ERROR_ICON_SIZE;
+    errorIcon.lineStyle(MagicWordsConfig.ERROR_ICON_LINE_WIDTH, 0xff4444);
+    errorIcon.moveTo(-iconSize, -iconSize);
+    errorIcon.lineTo(iconSize, iconSize);
+    errorIcon.moveTo(iconSize, -iconSize);
+    errorIcon.lineTo(-iconSize, iconSize);
     errorIcon.x = this.containerWidth / 2;
-    errorIcon.y = this.containerHeight / 2 - 60;
+    errorIcon.y =
+      this.containerHeight / 2 + MagicWordsConfig.ERROR_ICON_Y_OFFSET;
     this.loadingContainer.addChild(errorIcon);
 
     // Error message
     const errorText = new Text(
       "I'm sorry, we encountered an error.\nPlease try again later.",
       {
-        fontSize: 18,
+        fontSize: MagicWordsConfig.ERROR_TEXT_SIZE,
         fill: 0x333333,
         fontFamily: "Arial",
         align: "center",
         wordWrap: true,
-        wordWrapWidth: this.containerWidth - 40,
+        wordWrapWidth:
+          this.containerWidth - MagicWordsConfig.ERROR_TEXT_PADDING,
       }
     );
     errorText.anchor.set(0.5);
     errorText.x = this.containerWidth / 2;
-    errorText.y = this.containerHeight / 2 + 20;
+    errorText.y =
+      this.containerHeight / 2 + MagicWordsConfig.ERROR_TEXT_Y_OFFSET;
     this.loadingContainer.addChild(errorText);
   }
 
   private createLoadingScreen(): void {
     // Semi-transparent background
     const bg = new Graphics();
-    bg.beginFill(0xffffff, 0.9);
+    bg.beginFill(0xffffff, MagicWordsConfig.LOADING_BG_ALPHA);
     bg.drawRect(0, 0, this.containerWidth, this.containerHeight);
     bg.endFill();
     this.loadingContainer.addChild(bg);
 
     // Loading spinner
     this.loadingSpinner = new Graphics();
-    this.loadingSpinner.lineStyle(4, 0x4a90e2);
-    this.loadingSpinner.arc(0, 0, 30, 0, Math.PI * 1.5);
+    this.loadingSpinner.lineStyle(
+      MagicWordsConfig.LOADING_SPINNER_LINE_WIDTH,
+      0x4a90e2
+    );
+    this.loadingSpinner.arc(
+      0,
+      0,
+      MagicWordsConfig.LOADING_SPINNER_RADIUS,
+      0,
+      MagicWordsConfig.LOADING_SPINNER_ARC_ANGLE
+    );
     this.loadingSpinner.x = this.containerWidth / 2;
-    this.loadingSpinner.y = this.containerHeight / 2 - 30;
+    this.loadingSpinner.y =
+      this.containerHeight / 2 + MagicWordsConfig.LOADING_SPINNER_Y_OFFSET;
     this.loadingContainer.addChild(this.loadingSpinner);
 
     // Loading text
     this.loadingText = new Text("Loading...", {
-      fontSize: 18,
+      fontSize: MagicWordsConfig.LOADING_TEXT_SIZE,
       fill: 0x333333,
       fontFamily: "Arial",
     });
     this.loadingText.anchor.set(0.5);
     this.loadingText.x = this.containerWidth / 2;
-    this.loadingText.y = this.containerHeight / 2 + 30;
+    this.loadingText.y =
+      this.containerHeight / 2 + MagicWordsConfig.LOADING_TEXT_Y_OFFSET;
     this.loadingContainer.addChild(this.loadingText);
 
     // Animate spinner
     gsap.to(this.loadingSpinner, {
-      rotation: Math.PI * 2,
-      duration: 1,
+      rotation: MagicWordsConfig.INITIAL_ROTATION_MAX,
+      duration: MagicWordsConfig.LOADING_SPINNER_DURATION,
       repeat: -1,
       ease: "none",
     });
@@ -282,7 +296,7 @@ export class MagicWordsGame {
       // Hide loading screen with fade out
       gsap.to(this.loadingContainer, {
         alpha: 0,
-        duration: 0.5,
+        duration: MagicWordsConfig.LOADING_FADE_DURATION,
         onComplete: () => {
           container.removeChild(this.loadingContainer);
           this.loadingContainer.destroy({ children: true });
@@ -329,10 +343,18 @@ export class MagicWordsGame {
         // Update scroll position
         const newY = this.messageContainer.y + deltaY;
         const contentHeight = this.messageContainer.height;
-        const minY = Math.min(0, this.containerHeight - contentHeight - 20);
+        const minY = Math.min(
+          MagicWordsConfig.SCROLL_MIN_Y,
+          this.containerHeight -
+            contentHeight -
+            MagicWordsConfig.SCROLL_BOTTOM_PADDING
+        );
 
         // Clamp the scroll position
-        this.messageContainer.y = Math.max(minY, Math.min(0, newY));
+        this.messageContainer.y = Math.max(
+          minY,
+          Math.min(MagicWordsConfig.SCROLL_MIN_Y, newY)
+        );
       }
     });
 
@@ -349,10 +371,18 @@ export class MagicWordsGame {
       const deltaY = event.deltaY;
       const newY = this.messageContainer.y - deltaY;
       const contentHeight = this.messageContainer.height;
-      const minY = Math.min(0, this.containerHeight - contentHeight - 20);
+      const minY = Math.min(
+        MagicWordsConfig.SCROLL_MIN_Y,
+        this.containerHeight -
+          contentHeight -
+          MagicWordsConfig.SCROLL_BOTTOM_PADDING
+      );
 
       gsap.killTweensOf(this.messageContainer);
-      this.messageContainer.y = Math.max(minY, Math.min(0, newY));
+      this.messageContainer.y = Math.max(
+        minY,
+        Math.min(MagicWordsConfig.SCROLL_MIN_Y, newY)
+      );
     });
   }
 
@@ -362,7 +392,7 @@ export class MagicWordsGame {
       this.showCurrentMessage();
     }
 
-    // Then show remaining messages with 2 second delay
+    // Then show remaining messages with delay
     this.animationInterval = window.setInterval(() => {
       if (this.currentMessageIndex < this.data.dialogue.length) {
         this.showCurrentMessage();
@@ -372,7 +402,7 @@ export class MagicWordsGame {
           this.animationInterval = null;
         }
       }
-    }, 2000);
+    }, MagicWordsConfig.MESSAGE_INTERVAL_MS);
   }
 
   private showCurrentMessage(): void {
@@ -389,11 +419,16 @@ export class MagicWordsGame {
     const contentHeight = this.messageContainer.height;
     // If content is taller than container, scroll up (negative y)
     // Otherwise stay at 0
-    const targetY = Math.min(0, this.containerHeight - contentHeight - 20);
+    const targetY = Math.min(
+      MagicWordsConfig.SCROLL_MIN_Y,
+      this.containerHeight -
+        contentHeight -
+        MagicWordsConfig.SCROLL_BOTTOM_PADDING
+    );
 
     gsap.to(this.messageContainer, {
       y: targetY,
-      duration: 0.5,
+      duration: MagicWordsConfig.SCROLL_DURATION,
       ease: "power2.out",
     });
   }
@@ -417,9 +452,16 @@ export class MagicWordsGame {
     const avatarTexture = this.avatarTextures.get(dialogueItem.name);
 
     try {
+      // Calculate max width: container width minus padding and avatar space
+      const maxBubbleWidth = Math.min(
+        MagicWordsConfig.MAX_BUBBLE_WIDTH,
+        this.containerWidth - MagicWordsConfig.BUBBLE_WIDTH_PADDING
+      );
+
       const bubble = new MessageBubble(
         dialogueItem.text,
         isLeft,
+        maxBubbleWidth,
         avatarTexture,
         this.emojiTextures
       );
@@ -428,15 +470,22 @@ export class MagicWordsGame {
       this.messageContainer.addChild(bubble);
 
       // Calculate position
-      let yPos = 10;
+      let yPos = MagicWordsConfig.MESSAGE_INITIAL_Y;
       if (this.messages.length > 0) {
         const lastMessage = this.messages[this.messages.length - 1];
-        yPos = lastMessage.y + lastMessage.getHeight() + 15;
+        yPos =
+          lastMessage.y +
+          lastMessage.getHeight() +
+          MagicWordsConfig.MESSAGE_SPACING;
       }
 
       // Get bubble width from bounds
       const bubbleWidth = bubble.getBounds().width;
-      const xPos = isLeft ? 20 : this.containerWidth - bubbleWidth - 20;
+      const xPos = isLeft
+        ? MagicWordsConfig.MESSAGE_SIDE_PADDING
+        : this.containerWidth -
+          bubbleWidth -
+          MagicWordsConfig.MESSAGE_SIDE_PADDING;
 
       bubble.x = xPos;
       bubble.y = yPos;
