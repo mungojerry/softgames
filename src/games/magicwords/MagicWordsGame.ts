@@ -23,7 +23,6 @@ export class MagicWordsGame {
   private loadingContainer: Container;
   private loadingSpinner!: Graphics;
   private loadingText!: Text;
-  private assetsLoaded = false;
   private dataEndpoint: string;
 
   constructor(
@@ -44,10 +43,8 @@ export class MagicWordsGame {
     this.maskGraphics.endFill();
     this.scrollContainer.mask = this.maskGraphics;
 
-    // Create phone frame
     this.createPhoneFrame();
 
-    // Create loading screen
     this.createLoadingScreen();
 
     // Set data endpoint (use default hardcoded data if not provided)
@@ -80,17 +77,6 @@ export class MagicWordsGame {
       this.containerWidth,
       this.containerHeight,
       15
-    );
-    this.phoneFrame.endFill();
-
-    // Camera notch at top
-    this.phoneFrame.beginFill(0x1a1a1a);
-    this.phoneFrame.drawRoundedRect(
-      this.containerWidth / 2 - 40,
-      -this.PHONE_BEZEL + 5,
-      80,
-      10,
-      5
     );
     this.phoneFrame.endFill();
   }
@@ -207,76 +193,54 @@ export class MagicWordsGame {
   }
 
   private async loadAssets(): Promise<void> {
-    const loadPromises: Promise<void>[] = [];
+    const emojiPromises = this.loadEmojis();
+    const avatarPromises = this.loadAvatars();
+    await Promise.all([...emojiPromises, ...avatarPromises]);
+  }
 
-    // Load emojis
-    this.data.emojies?.forEach((emoji) => {
-      if (!emoji?.name || !emoji?.url) {
-        console.warn("Invalid emoji data:", emoji);
-        return;
-      }
-
-      try {
-        const texture = Texture.from(emoji.url);
-        this.emojiTextures.set(emoji.name, texture);
-
-        // Wait for texture to load
-        if (!texture.valid) {
-          loadPromises.push(
-            new Promise<void>((resolve) => {
-              if (texture.baseTexture.valid) {
-                resolve();
-              } else {
-                texture.baseTexture.on("loaded", () => resolve());
-                texture.baseTexture.on("error", () => {
-                  console.warn(`Failed to load emoji: ${emoji.name}`);
-                  resolve();
-                });
-              }
-            })
-          );
+  private loadEmojis(): Promise<void>[] {
+    return (this.data.emojies || [])
+      .filter((emoji) => emoji?.name && emoji?.url)
+      .map((emoji) => {
+        try {
+          const texture = Texture.from(emoji.url);
+          this.emojiTextures.set(emoji.name, texture);
+          return this.waitForTextureLoad(texture, `emoji: ${emoji.name}`);
+        } catch (error) {
+          console.warn(`Error loading emoji '${emoji.name}':`, error);
+          return Promise.resolve();
         }
-      } catch (error) {
-        console.warn(`Error loading emoji '${emoji.name}':`, error);
-      }
-    });
+      });
+  }
 
-    // Load avatars
-    this.data.avatars?.forEach((avatar) => {
-      if (!avatar?.name || !avatar?.url) {
-        console.warn("Invalid avatar data:", avatar);
-        return;
-      }
-
-      try {
-        const texture = Texture.from(avatar.url);
-        this.avatarTextures.set(avatar.name, texture);
-        this.avatarMap.set(avatar.name, avatar);
-
-        // Wait for texture to load
-        if (!texture.valid) {
-          loadPromises.push(
-            new Promise<void>((resolve) => {
-              if (texture.baseTexture.valid) {
-                resolve();
-              } else {
-                texture.baseTexture.on("loaded", () => resolve());
-                texture.baseTexture.on("error", () => {
-                  console.warn(`Failed to load avatar: ${avatar.name}`);
-                  resolve();
-                });
-              }
-            })
-          );
+  private loadAvatars(): Promise<void>[] {
+    return (this.data.avatars || [])
+      .filter((avatar) => avatar?.name && avatar?.url)
+      .map((avatar) => {
+        try {
+          const texture = Texture.from(avatar.url);
+          this.avatarTextures.set(avatar.name, texture);
+          this.avatarMap.set(avatar.name, avatar);
+          return this.waitForTextureLoad(texture, `avatar: ${avatar.name}`);
+        } catch (error) {
+          console.warn(`Error loading avatar '${avatar.name}':`, error);
+          return Promise.resolve();
         }
-      } catch (error) {
-        console.warn(`Error loading avatar '${avatar.name}':`, error);
-      }
-    });
+      });
+  }
 
-    // Wait for all assets to load
-    await Promise.all(loadPromises);
-    this.assetsLoaded = true;
+  private waitForTextureLoad(texture: Texture, label: string): Promise<void> {
+    if (texture.valid || texture.baseTexture.valid) {
+      return Promise.resolve();
+    }
+
+    return new Promise<void>((resolve) => {
+      texture.baseTexture.once("loaded", () => resolve());
+      texture.baseTexture.once("error", () => {
+        console.warn(`Failed to load ${label}`);
+        resolve();
+      });
+    });
   }
 
   public async start(
@@ -325,16 +289,12 @@ export class MagicWordsGame {
         },
       });
 
-      // Enable scroll interactions
       this.setupScrollInteraction();
 
-      // Start showing messages
       this.startMessageAnimation();
     } catch (error) {
-      // Stop spinner animation
       gsap.killTweensOf(this.loadingSpinner);
 
-      // Show error message
       this.showErrorMessage();
 
       console.error("Failed to start game:", error);
@@ -397,17 +357,29 @@ export class MagicWordsGame {
   }
 
   private startMessageAnimation(): void {
+    // Show first message immediately
+    if (this.currentMessageIndex < this.data.dialogue.length) {
+      this.showCurrentMessage();
+    }
+
+    // Then show remaining messages with 2 second delay
     this.animationInterval = window.setInterval(() => {
       if (this.currentMessageIndex < this.data.dialogue.length) {
-        this.addMessage(this.currentMessageIndex);
-        this.currentMessageIndex++;
+        this.showCurrentMessage();
       } else {
         if (this.animationInterval !== null) {
           clearInterval(this.animationInterval);
           this.animationInterval = null;
         }
       }
-    }, 2000); // Show a new message every 2 seconds
+    }, 2000);
+  }
+
+  private showCurrentMessage(): void {
+    if (this.currentMessageIndex < this.data.dialogue.length) {
+      this.addMessage(this.currentMessageIndex);
+      this.currentMessageIndex++;
+    }
   }
 
   private scrollToBottom(): void {

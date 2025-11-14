@@ -7,11 +7,11 @@ export class AceOfShadowsGame {
   private stacks: CardStack[] = [];
   private readonly TOTAL_CARDS = 144;
   private readonly NUM_STACKS = 5; // 1 main stack + 4 destination stacks
-  private readonly CARD_OFFSET_Y = 2; // Vertical offset to show stacking
   private readonly STACK_SPACING = 200;
+  private readonly MAIN_STACK_INDEX = 0; // Main stack index
   private animationInterval: number | null = null;
   private cardTexture: Texture;
-  private currentDestStackIndex = 1; // Start with stack 1 (skip main stack at index 0)
+  private currentDestStackIndex = 1;
 
   constructor(app: Application) {
     if (!app) {
@@ -19,7 +19,6 @@ export class AceOfShadowsGame {
     }
 
     try {
-      // Load card texture from assets (works with any base path in dev and production)
       const basePath = import.meta?.env?.BASE_URL || "/";
       this.cardTexture = Texture.from(basePath + "assets/card.png");
 
@@ -28,7 +27,6 @@ export class AceOfShadowsGame {
       }
     } catch (error) {
       console.error("Error loading card texture:", error);
-      // Create a fallback white texture
       this.cardTexture = Texture.WHITE;
     }
   }
@@ -38,18 +36,17 @@ export class AceOfShadowsGame {
     centerX: number,
     centerY: number
   ): void {
-    // Initialize 5 stacks (1 main + 4 destination)
     const totalWidth = (this.NUM_STACKS - 1) * this.STACK_SPACING;
     const startX = centerX - totalWidth / 2;
-    const baseY = centerY - (this.TOTAL_CARDS * this.CARD_OFFSET_Y) / 2;
+    const baseY = centerY - this.TOTAL_CARDS / 2;
 
     for (let i = 0; i < this.NUM_STACKS; i++) {
       const stackX = startX + i * this.STACK_SPACING;
-      const stack = new CardStack(stackX, baseY, this.CARD_OFFSET_Y);
+      const stack = new CardStack(stackX, baseY);
       this.stacks.push(stack);
     }
 
-    // Create 144 cards and add them ALL to the main stack (stack 0)
+    // Create 144 cards and add them ALL to the main stack
     for (let i = 0; i < this.TOTAL_CARDS; i++) {
       const card = new Card(this.cardTexture);
       const position = this.stacks[0].getNextCardPosition();
@@ -61,45 +58,34 @@ export class AceOfShadowsGame {
       this.stacks[0].addCard(card);
     }
 
-    // Start the animation cycle
-    this.startAnimationCycle();
+    this.start();
   }
 
-  private startAnimationCycle(): void {
-    // Every 1 second, move the top card from a stack to another stack
+  private start(): void {
     this.animationInterval = window.setInterval(() => {
       this.moveTopCard();
     }, 1000);
   }
 
   private moveTopCard(): void {
-    // Always take from the main stack (stack 0)
-    const sourceStackIndex = 0;
-
-    // If main stack is empty, stop
-    if (this.stacks[sourceStackIndex].isEmpty()) {
+    const mainStack = this.stacks[this.MAIN_STACK_INDEX];
+    if (mainStack.isEmpty()) {
       return;
     }
 
-    // Current destination stack (cycles through 1, 2, 3, 4)
     const destStackIndex = this.currentDestStackIndex;
 
-    // Get the top card from the main stack
-    const card = this.stacks[sourceStackIndex].removeTopCard();
+    const card = mainStack.removeTopCard();
     if (!card) {
       return;
     }
 
-    // Get the destination position BEFORE adding the card
     const destPosition = this.stacks[destStackIndex].getNextCardPosition();
 
-    // Now add card to destination stack
     this.stacks[destStackIndex].addCard(card);
 
-    // Animate the card movement
     card.moveTo(destPosition.x, destPosition.y, Math.random() * 0.2 - 0.1, 2);
 
-    // Move to next destination stack (1 -> 2 -> 3 -> 4 -> 1 -> ...)
     this.currentDestStackIndex++;
     if (this.currentDestStackIndex >= this.NUM_STACKS) {
       this.currentDestStackIndex = 1; // Reset to first destination stack
@@ -107,13 +93,11 @@ export class AceOfShadowsGame {
   }
 
   public destroy(): void {
-    // Stop the animation interval
     if (this.animationInterval !== null) {
       clearInterval(this.animationInterval);
       this.animationInterval = null;
     }
 
-    // Destroy all cards
     this.cards.forEach((card) => card.destroy());
 
     this.cards = [];

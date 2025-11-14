@@ -4,12 +4,10 @@ export class CardStack {
   private cards: Card[] = [];
   private x: number;
   private baseY: number;
-  private readonly cardOffsetY: number;
 
-  constructor(x: number, baseY: number, cardOffsetY: number = 2) {
+  constructor(x: number, y: number) {
     this.x = x;
-    this.baseY = baseY;
-    this.cardOffsetY = cardOffsetY;
+    this.baseY = y;
   }
 
   public addCard(card: Card): void {
@@ -36,14 +34,6 @@ export class CardStack {
     return {
       x: this.x,
       y: this.baseY,
-    };
-  }
-
-  public getCurrentTopCardPosition(): { x: number; y: number } {
-    const cardIndex = Math.max(0, this.cards.length - 1);
-    return {
-      x: this.x,
-      y: this.baseY + cardIndex * this.cardOffsetY,
     };
   }
 

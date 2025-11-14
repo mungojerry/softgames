@@ -88,128 +88,138 @@ export class MessageBubble extends Container {
 
   private createMessageContent(): void {
     const parts = this.parseMessage(this.message);
+    const layout = {
+      currentX: this.PADDING,
+      currentY: this.PADDING,
+      maxWidth: this.MAX_WIDTH - this.PADDING * 2,
+      fontSize: 16,
+      emojiSize: 20,
+      lineSpacing: 5,
+      emojiSpacing: 4,
+    };
 
-    let currentX = this.PADDING;
-    let currentY = this.PADDING;
-    const maxWidth = this.MAX_WIDTH - this.PADDING * 2;
-    const fontSize = 16;
-    const emojiSize = 20;
-    const lineSpacing = 5;
-
-    parts.forEach((part, index) => {
+    parts.forEach((part) => {
       if (part.type === "text" && part.content) {
-        // Split text into words for manual wrapping
-        const words = part.content.split(" ").filter((word) => word.length > 0);
-
-        words.forEach((word, wordIndex) => {
-          const text = new Text(
-            word + (wordIndex < words.length - 1 ? " " : ""),
-            {
-              fontFamily: "Arial",
-              fontSize: fontSize,
-              fill: this.isLeft ? 0x000000 : 0xffffff,
-            }
-          );
-
-          // Check if we need to wrap to next line
-          if (
-            currentX + text.width > this.PADDING + maxWidth &&
-            currentX > this.PADDING
-          ) {
-            currentY += fontSize + lineSpacing;
-            currentX = this.PADDING;
-          }
-
-          text.x = currentX;
-          text.y = currentY;
-          this.textContainer.addChild(text);
-          currentX += text.width;
-        });
+        this.addTextPart(part.content, layout);
       } else if (part.type === "emoji") {
-        const emojiTexture = this.emojiTextures?.get(part.content);
-
-        // Try to use emoji texture if available and valid
-        if (emojiTexture && emojiTexture.valid) {
-          try {
-            // Add spacing before emoji
-            const emojiSpacing = 4;
-
-            // Check if emoji needs to wrap
-            if (
-              currentX + emojiSpacing + emojiSize > this.PADDING + maxWidth &&
-              currentX > this.PADDING
-            ) {
-              currentY += fontSize + lineSpacing;
-              currentX = this.PADDING;
-            } else if (currentX > this.PADDING) {
-              // Add spacing before emoji if not at start of line
-              currentX += emojiSpacing;
-            }
-
-            const emoji = new Sprite(emojiTexture);
-            emoji.width = emojiSize;
-            emoji.height = emojiSize;
-            emoji.x = currentX;
-            emoji.y = currentY;
-            this.textContainer.addChild(emoji);
-            currentX += emojiSize + emojiSpacing; // Add spacing after emoji
-          } catch (error) {
-            console.warn(
-              `Error creating emoji sprite for '${part.content}':`,
-              error
-            );
-            // Fall through to create fallback below
-          }
-        }
-
-        // If emoji failed to load or isn't valid, create fallback
-        if (!emojiTexture || !emojiTexture.valid) {
-          // Create circular placeholder with first letter
-          const emojiSpacing = 4;
-
-          // Check if emoji placeholder needs to wrap
-          if (
-            currentX + emojiSpacing + emojiSize > this.PADDING + maxWidth &&
-            currentX > this.PADDING
-          ) {
-            currentY += fontSize + lineSpacing;
-            currentX = this.PADDING;
-          } else if (currentX > this.PADDING) {
-            // Add spacing before emoji if not at start of line
-            currentX += emojiSpacing;
-          }
-
-          const emojiPlaceholder = new Container();
-
-          // Draw circle background
-          const circle = new Graphics();
-          circle.beginFill(this.isLeft ? 0xcccccc : 0x666666);
-          circle.drawCircle(emojiSize / 2, emojiSize / 2, emojiSize / 2);
-          circle.endFill();
-          emojiPlaceholder.addChild(circle);
-
-          // Add first letter of emoji name with question mark
-          const firstLetter = part.content.charAt(0).toUpperCase();
-          const label = new Text(`?`, {
-            fontFamily: "Arial",
-            fontSize: emojiSize * 0.6,
-            fill: this.isLeft ? 0x666666 : 0xcccccc,
-            fontWeight: "bold",
-          });
-          label.anchor.set(0.5);
-          label.x = emojiSize / 2;
-          label.y = emojiSize / 2;
-          emojiPlaceholder.addChild(label);
-
-          emojiPlaceholder.x = currentX;
-          emojiPlaceholder.y = currentY;
-          this.textContainer.addChild(emojiPlaceholder);
-          currentX += emojiSize + emojiSpacing;
-        }
+        this.addEmojiPart(part.content, layout);
       }
     });
 
     this.addChild(this.textContainer);
+  }
+
+  private addTextPart(content: string, layout: any): void {
+    const words = content.split(" ").filter((word) => word.length > 0);
+
+    words.forEach((word, wordIndex) => {
+      const text = new Text(word + (wordIndex < words.length - 1 ? " " : ""), {
+        fontFamily: "Arial",
+        fontSize: layout.fontSize,
+        fill: this.isLeft ? 0x000000 : 0xffffff,
+      });
+
+      if (
+        this.shouldWrapToNewLine(text.width, layout.currentX, layout.maxWidth)
+      ) {
+        layout.currentY += layout.fontSize + layout.lineSpacing;
+        layout.currentX = this.PADDING;
+      }
+
+      text.x = layout.currentX;
+      text.y = layout.currentY;
+      this.textContainer.addChild(text);
+      layout.currentX += text.width;
+    });
+  }
+
+  private addEmojiPart(emojiName: string, layout: any): void {
+    const emojiTexture = this.emojiTextures?.get(emojiName);
+
+    if (emojiTexture?.valid) {
+      this.addEmojiSprite(emojiTexture, layout);
+    } else {
+      this.addEmojiPlaceholder(layout);
+    }
+  }
+
+  private addEmojiSprite(texture: Texture, layout: any): void {
+    try {
+      const totalWidth = layout.emojiSpacing + layout.emojiSize;
+
+      if (
+        this.shouldWrapToNewLine(totalWidth, layout.currentX, layout.maxWidth)
+      ) {
+        layout.currentY += layout.fontSize + layout.lineSpacing;
+        layout.currentX = this.PADDING;
+      } else if (layout.currentX > this.PADDING) {
+        layout.currentX += layout.emojiSpacing;
+      }
+
+      const emoji = new Sprite(texture);
+      emoji.width = layout.emojiSize;
+      emoji.height = layout.emojiSize;
+      emoji.x = layout.currentX;
+      emoji.y = layout.currentY;
+      this.textContainer.addChild(emoji);
+      layout.currentX += layout.emojiSize + layout.emojiSpacing;
+    } catch (error) {
+      console.warn(`Error creating emoji sprite:`, error);
+      this.addEmojiPlaceholder(layout);
+    }
+  }
+
+  private addEmojiPlaceholder(layout: any): void {
+    const totalWidth = layout.emojiSpacing + layout.emojiSize;
+
+    if (
+      this.shouldWrapToNewLine(totalWidth, layout.currentX, layout.maxWidth)
+    ) {
+      layout.currentY += layout.fontSize + layout.lineSpacing;
+      layout.currentX = this.PADDING;
+    } else if (layout.currentX > this.PADDING) {
+      layout.currentX += layout.emojiSpacing;
+    }
+
+    const placeholder = this.createEmojiPlaceholderGraphics(layout.emojiSize);
+    placeholder.x = layout.currentX;
+    placeholder.y = layout.currentY;
+    this.textContainer.addChild(placeholder);
+    layout.currentX += layout.emojiSize + layout.emojiSpacing;
+  }
+
+  private createEmojiPlaceholderGraphics(size: number): Container {
+    const container = new Container();
+
+    const circle = new Graphics();
+    circle.beginFill(this.isLeft ? 0xcccccc : 0x666666);
+    circle.drawCircle(size / 2, size / 2, size / 2);
+    circle.endFill();
+    container.addChild(circle);
+
+    const label = new Text("?", {
+      fontFamily: "Arial",
+      fontSize: size * 0.6,
+      fill: this.isLeft ? 0x666666 : 0xcccccc,
+      fontWeight: "bold",
+    });
+    label.anchor.set(0.5);
+    label.x = size / 2;
+    label.y = size / 2;
+    container.addChild(label);
+
+    return container;
+  }
+
+  private shouldWrapToNewLine(
+    elementWidth: number,
+    currentX: number,
+    maxWidth: number
+  ): boolean {
+    return (
+      currentX + elementWidth > this.PADDING + maxWidth &&
+      currentX > this.PADDING
+    );
   }
 
   private parseMessage(
@@ -274,7 +284,6 @@ export class MessageBubble extends Container {
         this.avatar.y = this.bubble.height / 2;
       }
     } else {
-      // Right align
       if (this.avatar) {
         this.avatar.x = this.bubble.width + avatarOffset;
         this.avatar.y = this.bubble.height / 2;
@@ -283,13 +292,10 @@ export class MessageBubble extends Container {
   }
 
   public animateIn(delay: number = 0): void {
-    // Store the target position
     const targetY = this.y;
 
-    // Start position (slightly below)
     this.y = targetY + 20;
 
-    // Animate to target position
     gsap.to(this, {
       alpha: 1,
       y: targetY,
@@ -298,6 +304,7 @@ export class MessageBubble extends Container {
       ease: "back.out(1.7)",
     });
   }
+
   public getHeight(): number {
     return this.bubble.height;
   }
@@ -305,7 +312,6 @@ export class MessageBubble extends Container {
   public destroy(): void {
     gsap.killTweensOf(this);
 
-    // Clean up avatar (graphics or sprite)
     if (this.avatar) {
       if (this.avatar instanceof Sprite) {
         // Don't destroy shared texture, just the sprite

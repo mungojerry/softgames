@@ -100,8 +100,8 @@ export class PhoenixFlamesGame {
 
     // Animate with GSAP - use timeline for better performance
     const duration = 1 + Math.random() * 0.5;
-    const targetScaleX = particle.sprite.scale.x * 10.5;
-    const targetScaleY = particle.sprite.scale.y * 10.5;
+    const targetScaleX = particle.sprite.scale.x * 10;
+    const targetScaleY = particle.sprite.scale.y * 10;
 
     const timeline = gsap.timeline({
       onComplete: () => {
@@ -118,7 +118,8 @@ export class PhoenixFlamesGame {
         x: endX,
         y: endY,
         alpha: 0,
-        rotation: particle.sprite.rotation + (Math.random() - 0.5) * Math.PI,
+        rotation:
+          particle.sprite.rotation + ((Math.random() - 0.5) * Math.PI) / 2,
         duration,
         ease: "power1.out",
       },
