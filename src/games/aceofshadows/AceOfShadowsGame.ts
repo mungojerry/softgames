@@ -21,7 +21,7 @@ export class AceOfShadowsGame {
 
     try {
       // Use Vite's base URL for proper asset path in production
-      const basePath = import.meta.env.BASE_URL;
+      const basePath = import.meta.env.BASE_URL || "/softgames/";
       this.cardTexture = Texture.from(`${basePath}assets/card.png`);
 
       if (!this.cardTexture) {

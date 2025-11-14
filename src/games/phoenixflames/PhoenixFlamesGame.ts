@@ -17,7 +17,7 @@ export class PhoenixFlamesGame {
   constructor(private gameWidth: number, private gameHeight: number) {
     // Load fire texture from assets with error handling
     // Use Vite's base URL for proper asset path in production
-    const basePath = import.meta.env.BASE_URL;
+    const basePath = import.meta.env.BASE_URL || "/softgames/";
     try {
       this.fireTexture = Texture.from(`${basePath}assets/fire.png`);
 
