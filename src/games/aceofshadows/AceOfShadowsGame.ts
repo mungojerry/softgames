@@ -2,16 +2,14 @@ import { Texture, Application, Container } from "pixi.js";
 import { Card } from "./Card";
 import { CardStack } from "./CardStack";
 import { Responsive } from "../../utils/Responsive";
+import { AceOfShadowsConfig } from "./AceOfShadowsConfig";
 
 export class AceOfShadowsGame {
   private cards: Card[] = [];
   private stacks: CardStack[] = [];
-  private readonly TOTAL_CARDS = 144;
-  private readonly NUM_STACKS = 5; // 1 main stack + 4 destination stacks
-  private readonly MAIN_STACK_INDEX = 0; // Main stack index
   private animationInterval: number | null = null;
   private cardTexture: Texture;
-  private currentDestStackIndex = 1;
+  private currentDestStackIndex = AceOfShadowsConfig.FIRST_DEST_STACK_INDEX;
   private container: Container | null = null;
   private appWidth: number = 0;
   private appHeight: number = 0;
@@ -47,10 +45,11 @@ export class AceOfShadowsGame {
     if (isMobile) {
       // Mobile: 1 main stack at top, then 2x2 grid below
       const positions = [];
-      const topY = height * 0.4;
-      const bottomRowY = height * 0.55;
-      const bottomRow2Y = height * 0.75;
-      const gridSpacing = width * 0.35;
+      const topY = height * AceOfShadowsConfig.MOBILE_TOP_Y_RATIO;
+      const bottomRowY = height * AceOfShadowsConfig.MOBILE_BOTTOM_ROW_Y_RATIO;
+      const bottomRow2Y =
+        height * AceOfShadowsConfig.MOBILE_BOTTOM_ROW2_Y_RATIO;
+      const gridSpacing = width * AceOfShadowsConfig.MOBILE_GRID_SPACING_RATIO;
 
       // Main stack at top center
       positions.push({ x: centerX, y: topY });
@@ -67,7 +66,7 @@ export class AceOfShadowsGame {
     }
 
     // Desktop: horizontal layout
-    const spacing = 200;
+    const spacing = AceOfShadowsConfig.DESKTOP_STACK_SPACING;
     const totalWidth = (numStacks - 1) * spacing;
     const startX = centerX - totalWidth / 2;
     const y = height / 2;
@@ -94,28 +93,37 @@ export class AceOfShadowsGame {
       : centerY * 2;
 
     const layout = this.getCardStackLayout(
-      this.NUM_STACKS,
+      AceOfShadowsConfig.NUM_STACKS,
       this.appWidth,
       this.appHeight
     );
-    const cardScale = Responsive.isMobile() ? 0.4 : 1;
+    const cardScale = Responsive.isMobile()
+      ? AceOfShadowsConfig.MOBILE_CARD_SCALE
+      : AceOfShadowsConfig.DESKTOP_CARD_SCALE;
 
-    for (let i = 0; i < this.NUM_STACKS; i++) {
+    for (let i = 0; i < AceOfShadowsConfig.NUM_STACKS; i++) {
       const pos = layout.positions[i];
-      const stack = new CardStack(pos.x, pos.y - this.TOTAL_CARDS / 2);
+      const stack = new CardStack(
+        pos.x,
+        pos.y - AceOfShadowsConfig.TOTAL_CARDS / 2
+      );
       this.stacks.push(stack);
     }
 
-    // Create 144 cards and add them ALL to the main stack
-    for (let i = 0; i < this.TOTAL_CARDS; i++) {
+    // Create cards and add them ALL to the main stack
+    for (let i = 0; i < AceOfShadowsConfig.TOTAL_CARDS; i++) {
       const card = new Card(this.cardTexture, cardScale);
-      const position = this.stacks[0].getNextCardPosition();
+      const position =
+        this.stacks[AceOfShadowsConfig.MAIN_STACK_INDEX].getNextCardPosition();
       card.setPosition(position.x, position.y);
-      card.setRotation(Math.random() * 0.2 - 0.1); // Slight random rotation
+      card.setRotation(
+        Math.random() * AceOfShadowsConfig.CARD_ROTATION_VARIANCE -
+          AceOfShadowsConfig.CARD_ROTATION_VARIANCE / 2
+      ); // Slight random rotation
 
       container.addChild(card.sprite);
       this.cards.push(card);
-      this.stacks[0].addCard(card);
+      this.stacks[AceOfShadowsConfig.MAIN_STACK_INDEX].addCard(card);
     }
 
     this.start();
@@ -124,11 +132,11 @@ export class AceOfShadowsGame {
   private start(): void {
     this.animationInterval = window.setInterval(() => {
       this.moveTopCard();
-    }, 1000);
+    }, AceOfShadowsConfig.CARD_MOVE_INTERVAL_MS);
   }
 
   private moveTopCard(): void {
-    const mainStack = this.stacks[this.MAIN_STACK_INDEX];
+    const mainStack = this.stacks[AceOfShadowsConfig.MAIN_STACK_INDEX];
     if (mainStack.isEmpty()) {
       return;
     }
@@ -144,11 +152,17 @@ export class AceOfShadowsGame {
 
     this.stacks[destStackIndex].addCard(card);
 
-    card.moveTo(destPosition.x, destPosition.y, Math.random() * 0.2 - 0.1, 2);
+    card.moveTo(
+      destPosition.x,
+      destPosition.y,
+      Math.random() * AceOfShadowsConfig.CARD_ROTATION_VARIANCE -
+        AceOfShadowsConfig.CARD_ROTATION_VARIANCE / 2,
+      AceOfShadowsConfig.CARD_MOVE_DURATION_SEC
+    );
 
     this.currentDestStackIndex++;
-    if (this.currentDestStackIndex >= this.NUM_STACKS) {
-      this.currentDestStackIndex = 1; // Reset to first destination stack
+    if (this.currentDestStackIndex >= AceOfShadowsConfig.NUM_STACKS) {
+      this.currentDestStackIndex = AceOfShadowsConfig.FIRST_DEST_STACK_INDEX; // Reset to first destination stack
     }
   }
 
@@ -159,16 +173,18 @@ export class AceOfShadowsGame {
     this.appHeight = height;
 
     const layout = this.getCardStackLayout(
-      this.NUM_STACKS,
+      AceOfShadowsConfig.NUM_STACKS,
       this.appWidth,
       this.appHeight
     );
-    const cardScale = Responsive.isMobile() ? 0.4 : 1;
+    const cardScale = Responsive.isMobile()
+      ? AceOfShadowsConfig.MOBILE_CARD_SCALE
+      : AceOfShadowsConfig.DESKTOP_CARD_SCALE;
 
-    for (let i = 0; i < this.NUM_STACKS; i++) {
+    for (let i = 0; i < AceOfShadowsConfig.NUM_STACKS; i++) {
       const pos = layout.positions[i];
       const stack = this.stacks[i];
-      stack.setPosition(pos.x, pos.y - this.TOTAL_CARDS / 2);
+      stack.setPosition(pos.x, pos.y - AceOfShadowsConfig.TOTAL_CARDS / 2);
 
       // Update all cards in this stack
       const cards = stack.getCards();
