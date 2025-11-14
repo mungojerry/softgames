@@ -34,6 +34,10 @@ export class Card {
     try {
       const originalScale = this.sprite.scale.x;
 
+      // Kill existing tweens to prevent accumulation
+      gsap.killTweensOf(this.sprite);
+      gsap.killTweensOf(this.sprite.scale);
+
       gsap.to(this.sprite, {
         x,
         y,

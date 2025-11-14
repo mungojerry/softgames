@@ -304,6 +304,18 @@ export class MessageBubble extends Container {
 
   public destroy(): void {
     gsap.killTweensOf(this);
+
+    // Clean up avatar (graphics or sprite)
+    if (this.avatar) {
+      if (this.avatar instanceof Sprite) {
+        // Don't destroy shared texture, just the sprite
+        this.avatar.destroy({ texture: false, baseTexture: false });
+      } else {
+        this.avatar.destroy({ children: true });
+      }
+      this.avatar = null;
+    }
+
     super.destroy({ children: true });
   }
 }

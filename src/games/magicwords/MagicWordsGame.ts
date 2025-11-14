@@ -494,8 +494,12 @@ export class MagicWordsGame {
     gsap.killTweensOf(this.loadingContainer);
     gsap.killTweensOf(this.messageContainer);
 
-    this.messages.forEach((message) => message.destroy());
+    // Properly destroy all message bubbles (which kills their tweens)
+    this.messages.forEach((message) => {
+      message.destroy();
+    });
     this.messages = [];
+
     this.scrollContainer.destroy({ children: true });
     this.maskGraphics.destroy();
     this.phoneFrame.destroy();
@@ -503,6 +507,11 @@ export class MagicWordsGame {
     if (this.loadingContainer.parent) {
       this.loadingContainer.destroy({ children: true });
     }
+
+    // Clear texture maps (textures themselves are shared and managed by PixiJS)
+    this.emojiTextures.clear();
+    this.avatarTextures.clear();
+    this.avatarMap.clear();
   }
 
   public getContainer(): Container {

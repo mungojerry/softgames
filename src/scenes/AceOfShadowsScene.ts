@@ -27,7 +27,10 @@ export class AceOfShadowsScene extends Scene {
   }
 
   onExit(): void {
-    this.shadowParticles.forEach((particle) => gsap.killTweensOf(particle));
+    this.shadowParticles.forEach((particle) => {
+      gsap.killTweensOf(particle);
+      particle.destroy();
+    });
     this.shadowParticles = [];
 
     if (this.game) {

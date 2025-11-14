@@ -15,9 +15,23 @@ export class PhoenixFlamesGame {
   private startPosition = { x: 0, y: 0 };
 
   constructor(private gameWidth: number, private gameHeight: number) {
-    // Load fire texture from assets
+    // Load fire texture from assets with error handling
     const basePath = import.meta?.env?.BASE_URL || "/";
-    this.fireTexture = Texture.from(basePath + "assets/fire.png");
+    try {
+      this.fireTexture = Texture.from(basePath + "assets/fire.png");
+
+      // Add error handler for texture loading
+      if (!this.fireTexture.valid && this.fireTexture.baseTexture) {
+        this.fireTexture.baseTexture.on("error", () => {
+          console.error("Failed to load fire.png texture");
+          this.fireTexture = Texture.WHITE;
+        });
+      }
+    } catch (error) {
+      console.error("Error loading fire texture:", error);
+      this.fireTexture = Texture.WHITE;
+    }
+
     this.startPosition.x = gameWidth / 2;
     this.startPosition.y = gameHeight / 2;
   }
@@ -84,18 +98,12 @@ export class PhoenixFlamesGame {
     const endX = startX + (Math.random() - 0.5) * 0.5;
     const endY = startY - this.gameHeight * 0.2 - Math.random() * 5;
 
-    // Animate with GSAP
+    // Animate with GSAP - use timeline for better performance
     const duration = 1 + Math.random() * 0.5;
+    const targetScaleX = particle.sprite.scale.x * 10.5;
+    const targetScaleY = particle.sprite.scale.y * 10.5;
 
-    // Upward movement with fade out
-    gsap.to(particle.sprite, {
-      x: endX,
-      y: endY,
-      alpha: 0,
-      rotation: particle.sprite.rotation + (Math.random() - 0.5) * Math.PI,
-      duration,
-
-      ease: "power1.out",
+    const timeline = gsap.timeline({
       onComplete: () => {
         // Deactivate particle for reuse
         particle.active = false;
@@ -103,15 +111,33 @@ export class PhoenixFlamesGame {
       },
     });
 
-    // Scale animation (grow then shrink)
-    gsap.to(particle.sprite.scale, {
-      x: particle.sprite.scale.x * 10.5,
-      y: particle.sprite.scale.y * 10.5,
-      duration: duration * 0.5,
-      ease: "power2.out",
-      yoyo: true,
-      repeat: 1,
-    });
+    // Upward movement with fade out
+    timeline.to(
+      particle.sprite,
+      {
+        x: endX,
+        y: endY,
+        alpha: 0,
+        rotation: particle.sprite.rotation + (Math.random() - 0.5) * Math.PI,
+        duration,
+        ease: "power1.out",
+      },
+      0
+    );
+
+    // Scale animation (grow then shrink) - runs parallel
+    timeline.to(
+      particle.sprite.scale,
+      {
+        x: targetScaleX,
+        y: targetScaleY,
+        duration: duration * 0.5,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1,
+      },
+      0
+    );
   }
 
   public destroy(): void {

@@ -36,6 +36,12 @@ export class SceneManager {
   }
 
   changeScene(newScene: Scene, transitionType?: TransitionType): void {
+    // Prevent scene change during active transition
+    if (this.nextScene !== null) {
+      console.warn("Scene change already in progress, ignoring new request");
+      return;
+    }
+
     // Store the next scene
     this.nextScene = newScene;
 

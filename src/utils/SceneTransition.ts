@@ -62,6 +62,7 @@ export class SceneTransition extends Container {
       onComplete: () => {
         this.isTransitioning = false;
         this.visible = false;
+        this.currentTween = undefined;
       },
     });
 
@@ -243,6 +244,7 @@ export class SceneTransition extends Container {
   reset(): void {
     if (this.currentTween) {
       this.currentTween.kill();
+      this.currentTween = undefined;
     }
     this.isTransitioning = false;
     this.animationProgress = 0;

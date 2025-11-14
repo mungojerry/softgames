@@ -116,4 +116,11 @@ export class Button extends Container {
     this.label.x = 0;
     this.label.y = 0;
   }
+
+  public destroy(options?: any): void {
+    // Kill any ongoing scale tweens
+    gsap.killTweensOf(this.scale);
+    gsap.killTweensOf(this);
+    super.destroy(options);
+  }
 }

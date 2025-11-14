@@ -10,8 +10,6 @@ import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 
 export class MainMenuScene extends Scene {
-  private particles: Graphics[] = [];
-
   constructor(private sceneManager: SceneManager) {
     super();
   }
@@ -23,8 +21,6 @@ export class MainMenuScene extends Scene {
   }
 
   onExit(): void {
-    this.particles.forEach((particle) => gsap.killTweensOf(particle));
-    this.particles = [];
     this.removeChildren();
   }
 

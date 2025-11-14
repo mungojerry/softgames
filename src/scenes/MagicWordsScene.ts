@@ -19,7 +19,10 @@ export class MagicWordsScene extends Scene {
     ui.addBackButton(Colors.BTN_MAGIC, () =>
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
-    this.startGame();
+    // Properly handle async startGame
+    this.startGame().catch((error) => {
+      console.error("Failed to start Magic Words game:", error);
+    });
   }
 
   onExit(): void {
