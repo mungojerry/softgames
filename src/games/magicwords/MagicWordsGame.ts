@@ -35,7 +35,6 @@ export class MagicWordsGame {
     this.loadingContainer = new Container();
     this.scrollContainer.addChild(this.messageContainer);
 
-    // Create mask for scrolling area
     this.maskGraphics = new Graphics();
     this.maskGraphics.beginFill(0xffffff);
     this.maskGraphics.drawRect(0, 0, containerWidth, containerHeight);
@@ -57,7 +56,6 @@ export class MagicWordsGame {
     const totalWidth = this.containerWidth + MagicWordsConfig.PHONE_BEZEL * 2;
     const totalHeight = this.containerHeight + MagicWordsConfig.PHONE_BEZEL * 2;
 
-    // Phone outer frame (dark border)
     this.phoneFrame.beginFill(0x1a1a1a);
     this.phoneFrame.drawRoundedRect(
       -MagicWordsConfig.PHONE_BEZEL,
@@ -68,7 +66,6 @@ export class MagicWordsGame {
     );
     this.phoneFrame.endFill();
 
-    // Screen area (inner cutout)
     this.phoneFrame.beginFill(0xffffff);
     this.phoneFrame.drawRoundedRect(
       0,
@@ -81,7 +78,6 @@ export class MagicWordsGame {
   }
 
   private async loadDialogueData(): Promise<DialogueData> {
-    // If endpoint is provided, fetch data from it
     if (this.dataEndpoint) {
       try {
         const response = await fetch(this.dataEndpoint);
@@ -91,7 +87,6 @@ export class MagicWordsGame {
           );
         }
         const data = await response.json();
-        // Validate data structure
         if (!this.isValidDialogueData(data)) {
           throw new Error("Invalid dialogue data structure");
         }
@@ -116,7 +111,6 @@ export class MagicWordsGame {
   }
 
   private showErrorMessage(): void {
-    // Clear loading screen content
     this.loadingContainer.removeChildren();
 
     // Error background
@@ -185,7 +179,6 @@ export class MagicWordsGame {
       this.containerHeight / 2 + MagicWordsConfig.LOADING_SPINNER_Y_OFFSET;
     this.loadingContainer.addChild(this.loadingSpinner);
 
-    // Loading text
     this.loadingText = new Text("Loading...", {
       fontSize: MagicWordsConfig.LOADING_TEXT_SIZE,
       fill: 0x333333,
@@ -262,38 +255,29 @@ export class MagicWordsGame {
     x: number,
     y: number
   ): Promise<void> {
-    // Position the phone frame
     this.phoneFrame.x = x;
     this.phoneFrame.y = y;
     container.addChild(this.phoneFrame);
 
-    // Position the mask at the correct location
     this.maskGraphics.x = x;
     this.maskGraphics.y = y;
 
-    // Position the scroll container
     this.scrollContainer.x = x;
     this.scrollContainer.y = y;
 
     container.addChild(this.maskGraphics);
     container.addChild(this.scrollContainer);
 
-    // Show loading screen
     this.loadingContainer.x = x;
     this.loadingContainer.y = y;
     container.addChild(this.loadingContainer);
 
     try {
-      // Load dialogue data
       this.data = await this.loadDialogueData();
 
-      // Load assets
       await this.loadAssets();
-
-      // Stop spinner animation before fading out
       gsap.killTweensOf(this.loadingSpinner);
 
-      // Hide loading screen with fade out
       gsap.to(this.loadingContainer, {
         alpha: 0,
         duration: MagicWordsConfig.LOADING_FADE_DURATION,
@@ -330,9 +314,9 @@ export class MagicWordsGame {
 
     this.scrollContainer.on("pointerdown", (event) => {
       this.isDragging = true;
-      this.autoScroll = false; // Disable auto-scroll when user interacts
+      this.autoScroll = false;
       this.lastPointerY = event.global.y;
-      gsap.killTweensOf(this.messageContainer); // Stop any ongoing animations
+      gsap.killTweensOf(this.messageContainer);
     });
 
     this.scrollContainer.on("pointermove", (event) => {
@@ -340,7 +324,6 @@ export class MagicWordsGame {
         const deltaY = event.global.y - this.lastPointerY;
         this.lastPointerY = event.global.y;
 
-        // Update scroll position
         const newY = this.messageContainer.y + deltaY;
         const contentHeight = this.messageContainer.height;
         const minY = Math.min(
@@ -365,7 +348,6 @@ export class MagicWordsGame {
     this.scrollContainer.on("pointerup", endDrag);
     this.scrollContainer.on("pointerupoutside", endDrag);
 
-    // Mouse wheel support
     this.scrollContainer.on("wheel", (event: any) => {
       this.autoScroll = false;
       const deltaY = event.deltaY;

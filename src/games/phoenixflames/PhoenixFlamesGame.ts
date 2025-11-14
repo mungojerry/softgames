@@ -21,7 +21,6 @@ export class PhoenixFlamesGame {
     try {
       this.fireTexture = Texture.from(`${basePath}assets/fire.png`);
 
-      // Add error handler for texture loading
       if (!this.fireTexture.valid && this.fireTexture.baseTexture) {
         this.fireTexture.baseTexture.on("error", () => {
           console.error("Failed to load fire.png texture");
@@ -44,10 +43,8 @@ export class PhoenixFlamesGame {
     this.container.y = y;
     scene.addChild(this.container);
 
-    // Initialize particle pool
     this.initializeParticlePool();
 
-    // Start emitting particles
     this.startEmission();
   }
 
@@ -68,7 +65,6 @@ export class PhoenixFlamesGame {
   }
 
   private startEmission(): void {
-    // Emit a new particle at configured interval
     this.emissionInterval = window.setInterval(() => {
       this.emitParticle();
     }, PhoenixFlamesConfig.EMISSION_INTERVAL_MS);
@@ -111,7 +107,6 @@ export class PhoenixFlamesGame {
       Math.random() *
         (PhoenixFlamesConfig.MAX_SCALE - PhoenixFlamesConfig.MIN_SCALE);
 
-    // Animate particle with timeline
     const tl = gsap.timeline({
       onComplete: () => {
         particle!.active = false;
@@ -119,7 +114,6 @@ export class PhoenixFlamesGame {
       },
     });
 
-    // Movement and fade
     tl.to(sprite, {
       x: randomX,
       y: randomY,
@@ -128,7 +122,6 @@ export class PhoenixFlamesGame {
       ease: PhoenixFlamesConfig.MOVE_EASE,
     });
 
-    // Scale up
     tl.to(
       sprite.scale,
       {
@@ -140,7 +133,6 @@ export class PhoenixFlamesGame {
       PhoenixFlamesConfig.SCALE_START_TIME
     );
 
-    // Rotation
     tl.to(
       sprite,
       {
@@ -153,30 +145,23 @@ export class PhoenixFlamesGame {
   }
 
   public destroy(): void {
-    // Stop emission first to prevent new particles
     if (this.emissionInterval !== null) {
       clearInterval(this.emissionInterval);
       this.emissionInterval = null;
     }
 
-    // Kill all GSAP animations and clean up sprites
     this.particles.forEach((particle) => {
-      // Kill all tweens on the sprite and its properties
       gsap.killTweensOf(particle.sprite);
       gsap.killTweensOf(particle.sprite.scale);
 
-      // Destroy the sprite
       particle.sprite.destroy({ texture: false, baseTexture: false });
     });
 
     this.particles = [];
 
-    // Destroy container (children are already destroyed)
     if (this.container) {
       this.container.destroy({ children: false });
       this.container = null;
     }
-
-    // Don't destroy the shared texture as it might be reused
   }
 }

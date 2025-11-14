@@ -57,21 +57,18 @@ export class AceOfShadowsScene extends Scene {
     // Recreate entire scene
     this.removeChildren();
 
-    // Recreate UI
     const ui = new SceneUI(this, this.sceneManager);
     ui.addBackground(Colors.BG_SHADOWS);
     ui.addBackButton(Colors.BTN_SHADOWS, () =>
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
 
-    // Recreate shadow particles
     this.shadowParticles.forEach((particle) => {
       gsap.killTweensOf(particle);
     });
     this.shadowParticles = [];
     this.createShadowParticles();
 
-    // Reposition game elements
     if (this.game) {
       this.game.reposition(
         this.sceneManager.getAppWidth(),

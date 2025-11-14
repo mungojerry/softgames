@@ -33,7 +33,6 @@ export class PhoenixFlamesScene extends Scene {
     // GSAP handles animation, no manual update needed
   }
   onResize(): void {
-    // Restart the scene on resize
     this.onExit();
     this.onEnter();
   }
@@ -42,7 +41,6 @@ export class PhoenixFlamesScene extends Scene {
     const width = this.sceneManager.getAppWidth();
     const height = this.sceneManager.getAppHeight();
 
-    // Create game with full screen dimensions
     const gameWidth = width;
     const gameHeight = height - SceneConfig.PHOENIX_HEIGHT_OFFSET;
 

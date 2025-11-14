@@ -22,7 +22,6 @@ export class SceneManager {
     this.app = app;
     this.app.ticker.add((delta) => this.update(delta));
 
-    // Add transition overlay
     this.transition = new SceneTransition(
       this.app.screen.width,
       this.app.screen.height
@@ -30,7 +29,6 @@ export class SceneManager {
     this.transition.visible = false;
     this.app.stage.addChild(this.transition);
 
-    // Add FPS counter
     this.fpsCounter = new FPSCounter();
     this.app.stage.addChild(this.fpsCounter);
   }
@@ -42,17 +40,13 @@ export class SceneManager {
       return;
     }
 
-    // Store the next scene
     this.nextScene = newScene;
 
-    // Pick random transition if not specified
     const type =
       transitionType ||
       this.transitions[Math.floor(Math.random() * this.transitions.length)];
 
-    // Start transition
     this.transition.start(type, () => {
-      // This callback runs at the halfway point of the transition
       if (this.currentScene) {
         this.currentScene.onExit();
         this.app.stage.removeChild(this.currentScene);
@@ -65,7 +59,6 @@ export class SceneManager {
         this.app.stage.addChild(this.currentScene);
         this.currentScene.onEnter();
 
-        // Keep transition and FPS counter on top
         this.app.stage.setChildIndex(
           this.transition,
           this.app.stage.children.length - 1

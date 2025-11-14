@@ -19,14 +19,12 @@ export class MessageBubble extends Container {
     this.MAX_WIDTH = maxWidth;
     this.bubble = new Graphics();
     this.textContainer = new Container();
-    // Validate and sanitize message
     this.message = message?.trim() || "[No message]";
     this.create();
   }
 
   private createAvatar(): Sprite | Container {
     if (this.avatarTexture && this.avatarTexture.valid) {
-      // Use provided avatar texture
       try {
         const avatar = new Sprite(this.avatarTexture);
         avatar.width = MessageBubbleConfig.AVATAR_SIZE;
@@ -38,17 +36,14 @@ export class MessageBubble extends Container {
       }
     }
 
-    // Create unknown avatar - circle with question mark
     const avatarContainer = new Container();
 
-    // Draw circle background
     const circle = new Graphics();
     circle.beginFill(0xcccccc);
     circle.drawCircle(0, 0, MessageBubbleConfig.AVATAR_SIZE / 2);
     circle.endFill();
     avatarContainer.addChild(circle);
 
-    // Add question mark
     const questionMark = new Text("?", {
       fontFamily: "Arial",
       fontSize: MessageBubbleConfig.UNKNOWN_AVATAR_QUESTION_SIZE,
@@ -73,16 +68,12 @@ export class MessageBubble extends Container {
       this.addChild(this.avatar);
     }
 
-    // Parse message and create text with emojis
     this.createMessageContent();
 
-    // Draw bubble background
     this.drawBubble();
 
-    // Position elements
     this.positionElements();
 
-    // Initial animation state (will be animated in later)
     this.alpha = MessageBubbleConfig.INITIAL_ALPHA;
   }
 
@@ -327,7 +318,6 @@ export class MessageBubble extends Container {
 
     if (this.avatar) {
       if (this.avatar instanceof Sprite) {
-        // Don't destroy shared texture, just the sprite
         this.avatar.destroy({ texture: false, baseTexture: false });
       } else {
         this.avatar.destroy({ children: true });

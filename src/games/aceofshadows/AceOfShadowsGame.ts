@@ -20,7 +20,6 @@ export class AceOfShadowsGame {
     }
 
     try {
-      // Use Vite's base URL for proper asset path in production
       const basePath = import.meta.env.BASE_URL || "/softgames/";
       this.cardTexture = Texture.from(`${basePath}assets/card.png`);
 
@@ -110,8 +109,6 @@ export class AceOfShadowsGame {
       );
       this.stacks.push(stack);
     }
-
-    // Create cards and add them ALL to the main stack
     for (let i = 0; i < AceOfShadowsConfig.TOTAL_CARDS; i++) {
       const card = new Card(this.cardTexture, cardScale);
       const position =
@@ -120,7 +117,7 @@ export class AceOfShadowsGame {
       card.setRotation(
         Math.random() * AceOfShadowsConfig.CARD_ROTATION_VARIANCE -
           AceOfShadowsConfig.CARD_ROTATION_VARIANCE / 2
-      ); // Slight random rotation
+      );
 
       container.addChild(card.sprite);
       this.cards.push(card);
@@ -163,7 +160,7 @@ export class AceOfShadowsGame {
 
     this.currentDestStackIndex++;
     if (this.currentDestStackIndex >= AceOfShadowsConfig.NUM_STACKS) {
-      this.currentDestStackIndex = AceOfShadowsConfig.FIRST_DEST_STACK_INDEX; // Reset to first destination stack
+      this.currentDestStackIndex = AceOfShadowsConfig.FIRST_DEST_STACK_INDEX;
     }
   }
 
@@ -187,7 +184,6 @@ export class AceOfShadowsGame {
       const stack = this.stacks[i];
       stack.setPosition(pos.x, pos.y - AceOfShadowsConfig.TOTAL_CARDS / 2);
 
-      // Update all cards in this stack
       const cards = stack.getCards();
       cards.forEach((card, index) => {
         const cardPos = stack.getCardPosition(index);

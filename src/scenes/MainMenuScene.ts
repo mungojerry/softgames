@@ -37,7 +37,6 @@ export class MainMenuScene extends Scene {
   }
 
   private createParchmentBackground(): void {
-    // Draw parchment background
     const bg = new Graphics();
     bg.beginFill(0xf5e2c4); // parchment color
     bg.drawRect(
@@ -47,7 +46,6 @@ export class MainMenuScene extends Scene {
       this.sceneManager.getAppHeight()
     );
     bg.endFill();
-    // Draw thick dark border
     bg.lineStyle(SceneConfig.MENU_BORDER_WIDTH, 0x4a3a22, 1);
     bg.drawRect(
       SceneConfig.MENU_BORDER_PADDING,

@@ -31,7 +31,6 @@ export class SceneTransition extends Container {
   }
 
   start(type: TransitionType, onComplete: () => void): void {
-    // Kill any existing tween
     if (this.currentTween) {
       this.currentTween.kill();
     }
@@ -41,7 +40,6 @@ export class SceneTransition extends Container {
     this.animationProgress = 0;
     this.visible = true;
 
-    // Create mask if needed
     if (type === "softWipe" || type === "circle") {
       if (!this.transitionMask) {
         this.transitionMask = new Graphics();
@@ -56,7 +54,6 @@ export class SceneTransition extends Container {
       }
     }
 
-    // Use GSAP timeline for better control over the two-phase transition
     const timeline = gsap.timeline({
       onUpdate: () => this.updateTransition(),
       onComplete: () => {
@@ -66,7 +63,6 @@ export class SceneTransition extends Container {
       },
     });
 
-    // Phase 1: Transition in (0 to 1)
     timeline.to(this, {
       animationProgress: 1,
       duration: 0.4,
@@ -76,7 +72,6 @@ export class SceneTransition extends Container {
       },
     });
 
-    // Phase 2: Transition out (1 to 2)
     timeline.to(this, {
       animationProgress: 2,
       duration: 0.4,
@@ -120,7 +115,6 @@ export class SceneTransition extends Container {
    * Star Wars style soft wipe using a gradient mask
    */
   private updateSoftWipe(): void {
-    // Progress: 0 to 1 (wipe in), 1 to 2 (wipe out)
     let progress: number;
     if (this.animationProgress < 1) {
       progress = this.animationProgress;
@@ -128,16 +122,13 @@ export class SceneTransition extends Container {
       progress = this.animationProgress - 1;
     }
 
-    // Wipe position
     const wipeX = this.sceneWidth * progress;
-    const edgeWidth = 60; // Soft edge width
+    const edgeWidth = 60;
 
-    // Draw black overlay
     this.overlay.beginFill(0x000000);
     this.overlay.drawRect(0, 0, wipeX, this.sceneHeight);
     this.overlay.endFill();
 
-    // Draw soft edge using a gradient mask
     if (this.transitionMask) {
       this.transitionMask.clear();
       const steps = 20;
@@ -173,10 +164,8 @@ export class SceneTransition extends Container {
   private updateSlide(direction: number): void {
     let xPos: number;
     if (this.animationProgress < 1) {
-      // Slide in
       xPos = (1 - this.animationProgress) * this.sceneWidth * direction;
     } else {
-      // Slide out
       xPos = (this.animationProgress - 1) * this.sceneWidth * -direction;
     }
 
@@ -188,10 +177,8 @@ export class SceneTransition extends Container {
   private updateWipe(): void {
     let progress: number;
     if (this.animationProgress < 1) {
-      // Wipe in from top to bottom
       progress = this.animationProgress;
     } else {
-      // Wipe out from top to bottom
       progress = this.animationProgress - 1;
     }
 
@@ -220,19 +207,15 @@ export class SceneTransition extends Container {
 
     let radius: number;
     if (this.animationProgress < 1) {
-      // Circle grows from center
       radius = this.animationProgress * maxRadius;
     } else {
-      // Circle shrinks from full coverage
       radius = (2 - this.animationProgress) * maxRadius;
     }
 
-    // Draw black overlay
     this.overlay.beginFill(0x000000);
     this.overlay.drawRect(0, 0, this.sceneWidth, this.sceneHeight);
     this.overlay.endFill();
 
-    // Update persistent mask for the circle
     if (this.transitionMask) {
       this.transitionMask.clear();
       this.transitionMask.beginFill(0xffffff);

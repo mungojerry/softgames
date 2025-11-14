@@ -19,7 +19,6 @@ export class MagicWordsScene extends Scene {
     ui.addBackButton(Colors.BTN_MAGIC, () =>
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
-    // Properly handle async startGame
     this.startGame().catch((error) => {
       console.error("Failed to start Magic Words game:", error);
     });
@@ -38,7 +37,6 @@ export class MagicWordsScene extends Scene {
   }
 
   onResize(): void {
-    // Restart the scene on resize
     this.onExit();
     this.onEnter();
   }
@@ -47,19 +45,12 @@ export class MagicWordsScene extends Scene {
     const width = this.sceneManager.getAppWidth();
     const height = this.sceneManager.getAppHeight();
 
-    // Create game with phone-like dimensions
     const gameWidth = Math.min(
       SceneConfig.MAGIC_WORDS_MAX_WIDTH,
       width - SceneConfig.MAGIC_WORDS_PADDING
     );
     const gameHeight = height - SceneConfig.MAGIC_WORDS_HEIGHT_OFFSET;
 
-    // Optional: Pass an endpoint URL to load dialogue data from
-    // Example: 'https://api.example.com/dialogue'
-    // If not provided, uses hardcoded data
-
-    // Simulate network error by using an invalid endpoint
-    // Set to undefined or valid endpoint to see normal behavior
     const simulateNetworkError = false;
     const dataEndpoint = simulateNetworkError
       ? "https://invalid-endpoint-that-does-not-exist.com/error"
