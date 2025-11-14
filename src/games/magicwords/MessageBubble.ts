@@ -1,22 +1,22 @@
 import { Container, Graphics, Text, Sprite, Texture } from "pixi.js";
+import { MessageBubbleConfig } from "./MessageBubbleConfig";
 import gsap from "gsap";
 
 export class MessageBubble extends Container {
   private bubble: Graphics;
   private textContainer: Container;
   private avatar: Sprite | Container | null = null;
-  private readonly MAX_WIDTH = 400;
-  private readonly PADDING = 15;
-  private readonly AVATAR_SIZE = 40;
-  private readonly BUBBLE_RADIUS = 15;
+  private readonly MAX_WIDTH: number;
 
   constructor(
     private message: string,
     private isLeft: boolean,
+    maxWidth: number = MessageBubbleConfig.DEFAULT_MAX_WIDTH,
     private avatarTexture?: Texture,
     private emojiTextures?: Map<string, Texture>
   ) {
     super();
+    this.MAX_WIDTH = maxWidth;
     this.bubble = new Graphics();
     this.textContainer = new Container();
     // Validate and sanitize message
@@ -29,9 +29,9 @@ export class MessageBubble extends Container {
       // Use provided avatar texture
       try {
         const avatar = new Sprite(this.avatarTexture);
-        avatar.width = this.AVATAR_SIZE;
-        avatar.height = this.AVATAR_SIZE;
-        avatar.anchor.set(0.5);
+        avatar.width = MessageBubbleConfig.AVATAR_SIZE;
+        avatar.height = MessageBubbleConfig.AVATAR_SIZE;
+        avatar.anchor.set(MessageBubbleConfig.AVATAR_ANCHOR);
         return avatar;
       } catch (error) {
         console.warn("Error creating avatar sprite:", error);
@@ -44,18 +44,18 @@ export class MessageBubble extends Container {
     // Draw circle background
     const circle = new Graphics();
     circle.beginFill(0xcccccc);
-    circle.drawCircle(0, 0, this.AVATAR_SIZE / 2);
+    circle.drawCircle(0, 0, MessageBubbleConfig.AVATAR_SIZE / 2);
     circle.endFill();
     avatarContainer.addChild(circle);
 
     // Add question mark
     const questionMark = new Text("?", {
       fontFamily: "Arial",
-      fontSize: 24,
+      fontSize: MessageBubbleConfig.UNKNOWN_AVATAR_QUESTION_SIZE,
       fill: 0x666666,
       fontWeight: "bold",
     });
-    questionMark.anchor.set(0.5);
+    questionMark.anchor.set(MessageBubbleConfig.AVATAR_ANCHOR);
     questionMark.x = 0;
     questionMark.y = 0;
     avatarContainer.addChild(questionMark);
@@ -68,7 +68,7 @@ export class MessageBubble extends Container {
     this.avatar = this.createAvatar();
     if (this.avatar) {
       if (this.isLeft) {
-        this.avatar.x = this.AVATAR_SIZE / 2;
+        this.avatar.x = MessageBubbleConfig.AVATAR_SIZE / 2;
       }
       this.addChild(this.avatar);
     }
@@ -83,19 +83,19 @@ export class MessageBubble extends Container {
     this.positionElements();
 
     // Initial animation state (will be animated in later)
-    this.alpha = 0;
+    this.alpha = MessageBubbleConfig.INITIAL_ALPHA;
   }
 
   private createMessageContent(): void {
     const parts = this.parseMessage(this.message);
     const layout = {
-      currentX: this.PADDING,
-      currentY: this.PADDING,
-      maxWidth: this.MAX_WIDTH - this.PADDING * 2,
-      fontSize: 16,
-      emojiSize: 20,
-      lineSpacing: 5,
-      emojiSpacing: 4,
+      currentX: MessageBubbleConfig.PADDING,
+      currentY: MessageBubbleConfig.PADDING,
+      maxWidth: this.MAX_WIDTH - MessageBubbleConfig.PADDING * 2,
+      fontSize: MessageBubbleConfig.TEXT_FONT_SIZE,
+      emojiSize: MessageBubbleConfig.EMOJI_SIZE,
+      lineSpacing: MessageBubbleConfig.LINE_SPACING,
+      emojiSpacing: MessageBubbleConfig.EMOJI_SPACING,
     };
 
     parts.forEach((part) => {
@@ -123,7 +123,7 @@ export class MessageBubble extends Container {
         this.shouldWrapToNewLine(text.width, layout.currentX, layout.maxWidth)
       ) {
         layout.currentY += layout.fontSize + layout.lineSpacing;
-        layout.currentX = this.PADDING;
+        layout.currentX = MessageBubbleConfig.PADDING;
       }
 
       text.x = layout.currentX;
@@ -151,8 +151,8 @@ export class MessageBubble extends Container {
         this.shouldWrapToNewLine(totalWidth, layout.currentX, layout.maxWidth)
       ) {
         layout.currentY += layout.fontSize + layout.lineSpacing;
-        layout.currentX = this.PADDING;
-      } else if (layout.currentX > this.PADDING) {
+        layout.currentX = MessageBubbleConfig.PADDING;
+      } else if (layout.currentX > MessageBubbleConfig.PADDING) {
         layout.currentX += layout.emojiSpacing;
       }
 
@@ -176,8 +176,8 @@ export class MessageBubble extends Container {
       this.shouldWrapToNewLine(totalWidth, layout.currentX, layout.maxWidth)
     ) {
       layout.currentY += layout.fontSize + layout.lineSpacing;
-      layout.currentX = this.PADDING;
-    } else if (layout.currentX > this.PADDING) {
+      layout.currentX = MessageBubbleConfig.PADDING;
+    } else if (layout.currentX > MessageBubbleConfig.PADDING) {
       layout.currentX += layout.emojiSpacing;
     }
 
@@ -199,11 +199,11 @@ export class MessageBubble extends Container {
 
     const label = new Text("?", {
       fontFamily: "Arial",
-      fontSize: size * 0.6,
+      fontSize: size * MessageBubbleConfig.EMOJI_PLACEHOLDER_SIZE_RATIO,
       fill: this.isLeft ? 0x666666 : 0xcccccc,
       fontWeight: "bold",
     });
-    label.anchor.set(0.5);
+    label.anchor.set(MessageBubbleConfig.AVATAR_ANCHOR);
     label.x = size / 2;
     label.y = size / 2;
     container.addChild(label);
@@ -217,8 +217,8 @@ export class MessageBubble extends Container {
     maxWidth: number
   ): boolean {
     return (
-      currentX + elementWidth > this.PADDING + maxWidth &&
-      currentX > this.PADDING
+      currentX + elementWidth > MessageBubbleConfig.PADDING + maxWidth &&
+      currentX > MessageBubbleConfig.PADDING
     );
   }
 
@@ -261,21 +261,34 @@ export class MessageBubble extends Container {
     const bounds = this.textContainer.getLocalBounds();
     // Ensure minimum bubble size even if content is empty
     const width = Math.max(
-      Math.min(bounds.width + this.PADDING * 2, this.MAX_WIDTH),
-      this.PADDING * 4
+      Math.min(bounds.width + MessageBubbleConfig.PADDING * 2, this.MAX_WIDTH),
+      MessageBubbleConfig.PADDING *
+        MessageBubbleConfig.MIN_BUBBLE_WIDTH_MULTIPLIER
     );
-    const height = Math.max(bounds.height + this.PADDING * 2, this.PADDING * 3);
+    const height = Math.max(
+      bounds.height + MessageBubbleConfig.PADDING * 2,
+      MessageBubbleConfig.PADDING *
+        MessageBubbleConfig.MIN_BUBBLE_HEIGHT_MULTIPLIER
+    );
 
     this.bubble.clear();
     this.bubble.beginFill(this.isLeft ? 0xe8e8e8 : 0x0084ff);
-    this.bubble.drawRoundedRect(0, 0, width, height, this.BUBBLE_RADIUS);
+    this.bubble.drawRoundedRect(
+      0,
+      0,
+      width,
+      height,
+      MessageBubbleConfig.BUBBLE_RADIUS
+    );
     this.bubble.endFill();
 
     this.addChildAt(this.bubble, 0);
   }
 
   private positionElements(): void {
-    const avatarOffset = this.avatar ? this.AVATAR_SIZE + 10 : 0;
+    const avatarOffset = this.avatar
+      ? MessageBubbleConfig.AVATAR_SIZE + MessageBubbleConfig.AVATAR_OFFSET
+      : 0;
 
     if (this.isLeft) {
       this.bubble.x = avatarOffset;
@@ -294,14 +307,14 @@ export class MessageBubble extends Container {
   public animateIn(delay: number = 0): void {
     const targetY = this.y;
 
-    this.y = targetY + 20;
+    this.y = targetY + MessageBubbleConfig.ANIMATION_Y_OFFSET;
 
     gsap.to(this, {
-      alpha: 1,
+      alpha: MessageBubbleConfig.TARGET_ALPHA,
       y: targetY,
-      duration: 0.4,
+      duration: MessageBubbleConfig.ANIMATION_DURATION,
       delay,
-      ease: "back.out(1.7)",
+      ease: MessageBubbleConfig.ANIMATION_EASE,
     });
   }
 
