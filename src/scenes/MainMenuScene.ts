@@ -8,6 +8,7 @@ import { MagicWordsScene } from "./MagicWordsScene";
 import { PheonixFlamesScene } from "./PheonixFlamesScene";
 import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
+import { SceneConfig } from "./SceneConfig";
 
 export class MainMenuScene extends Scene {
   constructor(private sceneManager: SceneManager) {
@@ -47,18 +48,18 @@ export class MainMenuScene extends Scene {
     );
     bg.endFill();
     // Draw thick dark border
-    bg.lineStyle(10, 0x4a3a22, 1);
+    bg.lineStyle(SceneConfig.MENU_BORDER_WIDTH, 0x4a3a22, 1);
     bg.drawRect(
-      20,
-      20,
-      this.sceneManager.getAppWidth() - 40,
-      this.sceneManager.getAppHeight() - 40
+      SceneConfig.MENU_BORDER_PADDING,
+      SceneConfig.MENU_BORDER_PADDING,
+      this.sceneManager.getAppWidth() - SceneConfig.MENU_BORDER_INSET,
+      this.sceneManager.getAppHeight() - SceneConfig.MENU_BORDER_INSET
     );
     this.addChild(bg);
   }
 
   private createTitle(): void {
-    const isMobile = window.innerWidth < 768;
+    const isMobile = window.innerWidth < SceneConfig.MOBILE_BREAKPOINT;
     const appWidth = this.sceneManager.getAppWidth();
     const title = new Label("MAIN MENU", "title", {
       x: appWidth / 2,
@@ -66,11 +67,15 @@ export class MainMenuScene extends Scene {
       anchor: { x: 0.5, y: 0.5 },
       style: {
         fontFamily: "'Orbitron', Arial, sans-serif",
-        fontSize: isMobile ? 48 : 80,
+        fontSize: isMobile
+          ? SceneConfig.MOBILE_TITLE_FONT_SIZE
+          : SceneConfig.DESKTOP_TITLE_FONT_SIZE,
         fontWeight: "800",
         fill: 0x4a3a22,
         align: "center",
-        letterSpacing: isMobile ? 3 : 6,
+        letterSpacing: isMobile
+          ? SceneConfig.MOBILE_TITLE_LETTER_SPACING
+          : SceneConfig.DESKTOP_TITLE_LETTER_SPACING,
         dropShadow: false,
       },
     });
@@ -90,7 +95,7 @@ export class MainMenuScene extends Scene {
       },
     ];
 
-    const isMobile = window.innerWidth < 768;
+    const isMobile = window.innerWidth < SceneConfig.MOBILE_BREAKPOINT;
     const appWidth = this.sceneManager.getAppWidth();
     const centerX = appWidth / 2;
     const startY = UIConfig.POSITION.MENU_START_Y;
@@ -98,22 +103,34 @@ export class MainMenuScene extends Scene {
 
     games.forEach((game, index) => {
       const buttonWidth = isMobile
-        ? Math.min(appWidth - 60, 400)
-        : Math.min(600, appWidth - 100);
+        ? Math.min(
+            appWidth - SceneConfig.MOBILE_BUTTON_PADDING,
+            SceneConfig.MOBILE_MAX_BUTTON_WIDTH
+          )
+        : Math.min(
+            SceneConfig.DESKTOP_MAX_BUTTON_WIDTH,
+            appWidth - SceneConfig.DESKTOP_BUTTON_PADDING
+          );
 
       const button = new Button(game.name, 0x4a3a22, {
         width: buttonWidth,
-        height: isMobile ? 80 : 110,
+        height: isMobile
+          ? SceneConfig.MOBILE_BUTTON_HEIGHT
+          : SceneConfig.DESKTOP_BUTTON_HEIGHT,
         onClick: () => {
           this.sceneManager.changeScene(new game.scene(this.sceneManager));
         },
         style: {
           fontFamily: "'Orbitron', Arial, sans-serif",
-          fontSize: isMobile ? 22 : 35,
+          fontSize: isMobile
+            ? SceneConfig.MOBILE_BUTTON_FONT_SIZE
+            : SceneConfig.DESKTOP_BUTTON_FONT_SIZE,
           fontWeight: "600",
           fill: 0xf5e2c4,
           align: "center",
-          letterSpacing: isMobile ? 1 : 2,
+          letterSpacing: isMobile
+            ? SceneConfig.MOBILE_BUTTON_LETTER_SPACING
+            : SceneConfig.DESKTOP_BUTTON_LETTER_SPACING,
         },
       });
       button.x = centerX;
