@@ -37,7 +37,6 @@ export class PhoenixFlamesGame {
   }
 
   private initializeParticlePool(): void {
-    // Create exactly MAX_PARTICLES sprites
     for (let i = 0; i < this.MAX_PARTICLES; i++) {
       const sprite = new Sprite(this.fireTexture);
       sprite.anchor.set(0.5);
@@ -79,11 +78,11 @@ export class PhoenixFlamesGame {
     particle.sprite.x = startX;
     particle.sprite.y = startY;
     particle.sprite.alpha = 1;
-    particle.sprite.scale.set(0.015 + Math.random() * 0.03);
+    particle.sprite.scale.set(0.07 + Math.random() * 0.03);
     particle.sprite.rotation = Math.random() * Math.PI * 2;
 
     const endX = startX + (Math.random() - 0.5) * 0.5;
-    const endY = startY - this.gameHeight * 0.1 - Math.random() * 5;
+    const endY = startY - this.gameHeight * 0.2 - Math.random() * 5;
 
     // Animate with GSAP
     const duration = 1 + Math.random() * 0.5;
@@ -116,24 +115,30 @@ export class PhoenixFlamesGame {
   }
 
   public destroy(): void {
-    // Stop emission
+    // Stop emission first to prevent new particles
     if (this.emissionInterval !== null) {
       clearInterval(this.emissionInterval);
       this.emissionInterval = null;
     }
 
-    // Kill all GSAP animations
+    // Kill all GSAP animations and clean up sprites
     this.particles.forEach((particle) => {
+      // Kill all tweens on the sprite and its properties
       gsap.killTweensOf(particle.sprite);
       gsap.killTweensOf(particle.sprite.scale);
-      particle.sprite.destroy();
+
+      // Destroy the sprite
+      particle.sprite.destroy({ texture: false, baseTexture: false });
     });
 
     this.particles = [];
 
+    // Destroy container (children are already destroyed)
     if (this.container) {
-      this.container.destroy();
+      this.container.destroy({ children: false });
       this.container = null;
     }
+
+    // Don't destroy the shared texture as it might be reused
   }
 }
