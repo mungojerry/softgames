@@ -18,7 +18,6 @@ export class AceOfShadowsScene extends Scene {
   onEnter(): void {
     const ui = new SceneUI(this, this.sceneManager);
     ui.addBackground(Colors.BG_SHADOWS);
-    ui.addTitle("ACE OF SHADOWS", 100);
     ui.addBackButton(Colors.BTN_SHADOWS, () =>
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
@@ -50,6 +49,24 @@ export class AceOfShadowsScene extends Scene {
     const centerX = this.sceneManager.getAppWidth() / 2;
     const centerY = this.sceneManager.getAppHeight() / 1.5;
     this.game.createCards(this, centerX, centerY);
+  }
+
+  onResize(): void {
+    // Clear and recreate shadow particles
+    this.shadowParticles.forEach((particle) => {
+      gsap.killTweensOf(particle);
+      particle.destroy();
+    });
+    this.shadowParticles = [];
+    this.createShadowParticles();
+
+    // Reposition game elements
+    if (this.game) {
+      this.game.reposition(
+        this.sceneManager.getAppWidth(),
+        this.sceneManager.getAppHeight()
+      );
+    }
   }
 
   private createShadowParticles(): void {

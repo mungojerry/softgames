@@ -15,7 +15,6 @@ export class PheonixFlamesScene extends Scene {
   onEnter(): void {
     const ui = new SceneUI(this, this.sceneManager);
     ui.addBackground(Colors.BG_FLAMES);
-    ui.addTitle("PHOENIX FLAMES", 100);
     ui.addBackButton(Colors.BTN_FLAMES, () =>
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
@@ -29,9 +28,13 @@ export class PheonixFlamesScene extends Scene {
     }
     this.removeChildren();
   }
-
-  update(delta: number): void {
+  update(_delta: number): void {
     // GSAP handles animation, no manual update needed
+  }
+  onResize(): void {
+    // Restart the scene on resize
+    this.onExit();
+    this.onEnter();
   }
 
   private startGame(): void {
@@ -44,9 +47,6 @@ export class PheonixFlamesScene extends Scene {
 
     this.game = new PhoenixFlamesGame(gameWidth, gameHeight);
 
-    const x = 0;
-    const y = 150; // Below title
-
-    this.game.start(this, x, y);
+    this.game.start(this, 0, 100);
   }
 }

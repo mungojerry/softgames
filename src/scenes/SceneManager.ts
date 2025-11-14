@@ -97,4 +97,8 @@ export class SceneManager {
   getApp(): Application {
     return this.app;
   }
+
+  getCurrentScene(): Scene | null {
+    return this.currentScene;
+  }
 }

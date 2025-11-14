@@ -45,4 +45,15 @@ export class CardStack {
     this.x = x;
     this.baseY = baseY;
   }
+
+  public getCards(): Card[] {
+    return this.cards;
+  }
+
+  public getCardPosition(index: number): { x: number; y: number } {
+    return {
+      x: this.x,
+      y: this.baseY,
+    };
+  }
 }

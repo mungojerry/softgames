@@ -28,6 +28,13 @@ export class MainMenuScene extends Scene {
     // No manual update needed
   }
 
+  onResize(): void {
+    this.removeChildren();
+    this.createParchmentBackground();
+    this.createTitle();
+    this.createMenuButtons();
+  }
+
   private createParchmentBackground(): void {
     // Draw parchment background
     const bg = new Graphics();
@@ -51,17 +58,19 @@ export class MainMenuScene extends Scene {
   }
 
   private createTitle(): void {
+    const isMobile = window.innerWidth < 768;
+    const appWidth = this.sceneManager.getAppWidth();
     const title = new Label("MAIN MENU", "title", {
-      x: this.sceneManager.getAppWidth() / 2,
+      x: appWidth / 2,
       y: UIConfig.POSITION.TITLE_Y,
       anchor: { x: 0.5, y: 0.5 },
       style: {
         fontFamily: "'Orbitron', Arial, sans-serif",
-        fontSize: 80,
+        fontSize: isMobile ? 48 : 80,
         fontWeight: "800",
         fill: 0x4a3a22,
         align: "center",
-        letterSpacing: 6,
+        letterSpacing: isMobile ? 3 : 6,
         dropShadow: false,
       },
     });
@@ -81,24 +90,30 @@ export class MainMenuScene extends Scene {
       },
     ];
 
-    const centerX = this.sceneManager.getAppWidth() / 2;
+    const isMobile = window.innerWidth < 768;
+    const appWidth = this.sceneManager.getAppWidth();
+    const centerX = appWidth / 2;
     const startY = UIConfig.POSITION.MENU_START_Y;
     const spacing = UIConfig.SPACING.BUTTON;
 
     games.forEach((game, index) => {
+      const buttonWidth = isMobile
+        ? Math.min(appWidth - 60, 400)
+        : Math.min(600, appWidth - 100);
+
       const button = new Button(game.name, 0x4a3a22, {
-        width: 600,
-        height: 110,
+        width: buttonWidth,
+        height: isMobile ? 80 : 110,
         onClick: () => {
           this.sceneManager.changeScene(new game.scene(this.sceneManager));
         },
         style: {
           fontFamily: "'Orbitron', Arial, sans-serif",
-          fontSize: 35,
+          fontSize: isMobile ? 22 : 35,
           fontWeight: "600",
           fill: 0xf5e2c4,
           align: "center",
-          letterSpacing: 2,
+          letterSpacing: isMobile ? 1 : 2,
         },
       });
       button.x = centerX;

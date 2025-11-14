@@ -3,10 +3,13 @@ import gsap from "gsap";
 
 export class Card {
   public sprite: Sprite;
+  private baseScale: number;
 
-  constructor(texture: Texture) {
+  constructor(texture: Texture, scale: number = 1) {
     this.sprite = new Sprite(texture);
     this.sprite.anchor.set(0.5, 0.5);
+    this.baseScale = scale;
+    this.sprite.scale.set(scale);
   }
 
   public setPosition(x: number, y: number): void {
@@ -25,6 +28,11 @@ export class Card {
     return this.sprite.rotation;
   }
 
+  public setScale(scale: number): void {
+    this.baseScale = scale;
+    this.sprite.scale.set(scale);
+  }
+
   public moveTo(x: number, y: number, r: number, duration: number = 2): void {
     if (!this.sprite || !this.sprite.parent) {
       console.warn("Cannot animate card: sprite or parent is null");
@@ -32,7 +40,7 @@ export class Card {
     }
 
     try {
-      const originalScale = this.sprite.scale.x;
+      const originalScale = this.baseScale;
 
       // Kill existing tweens to prevent accumulation
       gsap.killTweensOf(this.sprite);

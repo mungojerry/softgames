@@ -15,7 +15,6 @@ export class MagicWordsScene extends Scene {
   onEnter(): void {
     const ui = new SceneUI(this, this.sceneManager);
     ui.addBackground(Colors.BG_MAGIC);
-    ui.addTitle("MAGIC WORDS", 100);
     ui.addBackButton(Colors.BTN_MAGIC, () =>
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
@@ -35,6 +34,12 @@ export class MagicWordsScene extends Scene {
 
   update(delta: number): void {
     // GSAP handles animation, no manual update needed
+  }
+
+  onResize(): void {
+    // Restart the scene on resize
+    this.onExit();
+    this.onEnter();
   }
 
   private async startGame(): Promise<void> {
@@ -58,9 +63,6 @@ export class MagicWordsScene extends Scene {
 
     this.game = new MagicWordsGame(gameWidth, gameHeight, dataEndpoint);
 
-    const x = (width - gameWidth) / 2;
-    const y = 150; // Below title
-
-    await this.game.start(this, x, y);
+    await this.game.start(this, (width - gameWidth) / 2, 50);
   }
 }

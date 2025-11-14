@@ -1,36 +1,46 @@
 import { TextStyle } from "pixi.js";
+import { Responsive } from "../utils/Responsive";
 
 export class TextStyles {
-  static readonly TITLE = new TextStyle({
-    fontFamily: "'Orbitron', Arial, sans-serif",
-    fontSize: 50,
-    fontWeight: "700",
-    fill: 0xffffff,
-    stroke: 0x333333,
-    strokeThickness: 3,
-    dropShadow: true,
-    dropShadowColor: 0x000000,
-    dropShadowBlur: 10,
-    dropShadowAngle: Math.PI / 4,
-    dropShadowDistance: 6,
-    letterSpacing: 6,
-    align: "center",
-  });
+  static get TITLE(): TextStyle {
+    const isMobile = Responsive.isMobile();
+    return new TextStyle({
+      fontFamily: "'Orbitron', Arial, sans-serif",
+      fontSize: isMobile ? 32 : 50,
+      fontWeight: "700",
+      fill: 0xffffff,
+      stroke: 0x333333,
+      strokeThickness: isMobile ? 2 : 3,
+      dropShadow: true,
+      dropShadowColor: 0x000000,
+      dropShadowBlur: isMobile ? 6 : 10,
+      dropShadowAngle: Math.PI / 4,
+      dropShadowDistance: isMobile ? 4 : 6,
+      letterSpacing: isMobile ? 3 : 6,
+      align: "center",
+    });
+  }
 
-  static readonly BUTTON = new TextStyle({
-    fontFamily: "'Orbitron', Arial, sans-serif",
-    fontSize: 24,
-    fontWeight: "500",
-    fill: 0xffffff,
-    letterSpacing: 1,
-  });
+  static get BUTTON(): TextStyle {
+    const isMobile = Responsive.isMobile();
+    return new TextStyle({
+      fontFamily: "'Orbitron', Arial, sans-serif",
+      fontSize: isMobile ? 18 : 24,
+      fontWeight: "500",
+      fill: 0xffffff,
+      letterSpacing: 1,
+    });
+  }
 
-  static readonly BUTTON_SMALL = new TextStyle({
-    fontFamily: "'Orbitron', Arial, sans-serif",
-    fontSize: 16,
-    fontWeight: "500",
-    fill: 0xffffff,
-  });
+  static get BUTTON_SMALL(): TextStyle {
+    const isMobile = Responsive.isMobile();
+    return new TextStyle({
+      fontFamily: "'Orbitron', Arial, sans-serif",
+      fontSize: isMobile ? 14 : 16,
+      fontWeight: "500",
+      fill: 0xffffff,
+    });
+  }
 
   static readonly MAGIC_WORD = new TextStyle({
     fontFamily: "'Orbitron', Arial, sans-serif",
