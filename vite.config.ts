@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: process.env.NODE_ENV === "production" ? "/softgames/" : "/",
+  base: "/softgames/",
   server: {
     port: 3000,
     open: true,
