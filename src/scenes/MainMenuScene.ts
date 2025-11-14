@@ -61,7 +61,7 @@ export class MainMenuScene extends Scene {
   private createTitle(): void {
     const isMobile = window.innerWidth < SceneConfig.MOBILE_BREAKPOINT;
     const appWidth = this.sceneManager.getAppWidth();
-    const title = new Label("MAIN MENU", "title", {
+    const title = new Label("MENU", "title", {
       x: appWidth / 2,
       y: UIConfig.POSITION.TITLE_Y,
       anchor: { x: 0.5, y: 0.5 },
