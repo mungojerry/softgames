@@ -1,13 +1,12 @@
-import { Graphics } from "pixi.js";
 import { Scene } from "./Scene";
 import { SceneManager } from "./SceneManager";
 import { MainMenuScene } from "./MainMenuScene";
 import { Colors } from "../styles/Colors";
 import { SceneUI } from "../ui/SceneUI";
-import gsap from "gsap";
+import { PhoenixFlamesGame } from "../games/phoenixflames/PhoenixFlamesGame";
 
 export class PheonixFlamesScene extends Scene {
-  private flames: Graphics[] = [];
+  private game: PhoenixFlamesGame | null = null;
 
   constructor(private sceneManager: SceneManager) {
     super();
@@ -16,16 +15,18 @@ export class PheonixFlamesScene extends Scene {
   onEnter(): void {
     const ui = new SceneUI(this, this.sceneManager);
     ui.addBackground(Colors.BG_FLAMES);
-    ui.addTitle("PHENIX FLAMES", 100);
+    ui.addTitle("PHOENIX FLAMES", 100);
     ui.addBackButton(Colors.BTN_FLAMES, () =>
       this.sceneManager.changeScene(new MainMenuScene(this.sceneManager))
     );
-    this.createFlameParticles();
+    this.startGame();
   }
 
   onExit(): void {
-    this.flames.forEach((flame) => gsap.killTweensOf(flame));
-    this.flames = [];
+    if (this.game) {
+      this.game.destroy();
+      this.game = null;
+    }
     this.removeChildren();
   }
 
@@ -33,36 +34,19 @@ export class PheonixFlamesScene extends Scene {
     // GSAP handles animation, no manual update needed
   }
 
-  private createFlameParticles(): void {
-    for (let i = 0; i < 15; i++) {
-      const color = i % 2 === 0 ? Colors.FLAME_ORANGE : Colors.FLAME_YELLOW;
-      const flame = new Graphics();
-      const radius = Math.random() * 8 + 7;
-      flame.beginFill(color);
-      flame.drawCircle(0, 0, radius);
-      flame.endFill();
-      flame.x = Math.random() * this.sceneManager.getAppWidth();
-      flame.y = this.sceneManager.getAppHeight();
-      flame.alpha = 1;
-      this.addChild(flame);
-      this.flames.push(flame);
+  private startGame(): void {
+    const width = this.sceneManager.getAppWidth();
+    const height = this.sceneManager.getAppHeight();
 
-      // Animate flame upward with GSAP
-      gsap.to(flame, {
-        y: -50,
-        alpha: 0,
-        scale: Math.random() * 0.5 + 1.2,
-        duration: 2 + Math.random() * 2,
-        ease: "power1.out",
-        repeat: -1,
-        repeatDelay: 0,
-        onRepeat: () => {
-          flame.y = this.sceneManager.getAppHeight();
-          flame.alpha = 1;
-          flame.scale.set(1);
-          flame.x = Math.random() * this.sceneManager.getAppWidth();
-        },
-      });
-    }
+    // Create game with full screen dimensions
+    const gameWidth = width;
+    const gameHeight = height - 200; // Leave space for title and back button
+
+    this.game = new PhoenixFlamesGame(gameWidth, gameHeight);
+
+    const x = 0;
+    const y = 150; // Below title
+
+    this.game.start(this, x, y);
   }
 }
